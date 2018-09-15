@@ -14,10 +14,12 @@ insert into privacy (risk, utility, k) values (4,5,3);
 insert into privacy (risk, utility, k) values (1,3,4);
 
 CREATE TABLE properties (
-	id BIGINT NOT NULL AUTO_INCREMENT,
-	vtest1 VARCHAR(255), 
-	vtest2 VARCHAR(255),
-	PRIMARY KEY (id) 
+	id BIGINT NOT NULL AUTO_INCREMENT,  
+	name varchar(30) NOT NULL,
+  	relevance float NOT NULL,
+  	threshold float NOT NULL,
+  	periodicity float NOT NULL,
+	PRIMARY KEY (id)
 );
 
 --------------------------------------------------------------------------------
