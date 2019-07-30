@@ -1,4 +1,4 @@
-package eubr.atmosphere.tma.utils;
+package eubr.atmosphere.tma.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
