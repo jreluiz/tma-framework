@@ -1,4 +1,4 @@
-package eubr.atmosphere.tma.utils;
+package eubr.atmosphere.tma.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -29,7 +29,7 @@ public class DatabaseManager {
         try {
             if ((connection == null) || connection.isClosed()) {
                 connection = DriverManager
-                        .getConnection("jdbc:mysql://mysql-0.mysql.default.svc.cluster.local:3306/knowledge?"
+                        .getConnection("jdbc:mysql://10.98.170.151:3306/knowledgenew?"
                                 + "user=root&password=passtobereplaced");
             }
         } catch (SQLException e) {
