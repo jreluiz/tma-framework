@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -43,9 +44,19 @@ public class CompositeAttribute extends Attribute implements Serializable {
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private List<Attribute> children;
 	
+	//bi-directional many-to-one association to Rule
+	@OneToMany(mappedBy="compositeattribute", fetch = FetchType.EAGER)
+	@Fetch(FetchMode.SUBSELECT)
+	@LazyCollection(LazyCollectionOption.FALSE)
+	private Set<Rule> rules;
+	
 	public CompositeAttribute() {
 	}
 
+	public void buildRules() {
+		
+	}
+	
 	public HistoricalData calculate(ConfigurationProfile profile, Date timestamp) throws UndefinedException {
 		
 		if (profile == null || ListUtils.isEmpty(profile.getPreferences())) {
@@ -155,6 +166,14 @@ public class CompositeAttribute extends Attribute implements Serializable {
 		this.children = children;
 	}
 
+	public Set<Rule> getRules() {
+		return rules;
+	}
+
+	public void setRules(Set<Rule> rules) {
+		this.rules = rules;
+	}
+
 	public Attribute addAttribute(Attribute attribute) {
 		getChildren().add(attribute);
 		attribute.setCompositeattribute(this);
@@ -193,7 +212,7 @@ public class CompositeAttribute extends Attribute implements Serializable {
 
 	@Override
 	public String toString() {
-		return "CompositeAttribute [operator=" + operator + "]";
+		return "CompositeAttribute [operator=" + operator + "] [rules=" + rules + "]";
 	}
 
 }
