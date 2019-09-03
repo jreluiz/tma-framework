@@ -1,4 +1,4 @@
-package eubr.atmosphere.tma.qualitymodel.entity;
+package eubr.atmosphere.tma.entity.qualitymodel;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -22,8 +22,8 @@ import org.hibernate.annotations.LazyCollectionOption;
  * The persistent class for the configurationprofile database table.
  * @author JorgeLuiz
  */
-@Entity(name="configurationprofile")
-@NamedQuery(name="configurationprofile.findAll", query="SELECT c FROM configurationprofile c")
+@Entity(name="ConfigurationProfile")
+@NamedQuery(name="configurationprofile.findAll", query="SELECT c FROM ConfigurationProfile c")
 public class ConfigurationProfile implements Serializable {
 
 	private static final long serialVersionUID = 726009967174063732L;

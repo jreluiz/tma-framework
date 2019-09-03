@@ -1,4 +1,4 @@
-package eubr.atmosphere.tma.qualitymodel.entity;
+package eubr.atmosphere.tma.entity.qualitymodel;
 
 /**
  * Attribute aggregation operator enumeration

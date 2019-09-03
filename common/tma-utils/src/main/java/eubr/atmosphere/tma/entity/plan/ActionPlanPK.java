@@ -1,4 +1,4 @@
-package eubr.atmosphere.tma.qualitymodel.entity;
+package eubr.atmosphere.tma.entity.plan;
 
 import java.io.Serializable;
 
@@ -9,7 +9,7 @@ import javax.persistence.Embeddable;
  * 
  */
 @Embeddable
-public class PlanActionPK implements Serializable {
+public class ActionPlanPK implements Serializable {
 
 	private static final long serialVersionUID = -2976274966203458390L;
 
@@ -17,7 +17,7 @@ public class PlanActionPK implements Serializable {
 
 	private int actionId;
 
-	public PlanActionPK() {
+	public ActionPlanPK() {
 	}
 	public int getPlanId() {
 		return this.planId;
@@ -36,10 +36,10 @@ public class PlanActionPK implements Serializable {
 		if (this == other) {
 			return true;
 		}
-		if (!(other instanceof PlanActionPK)) {
+		if (!(other instanceof ActionPlanPK)) {
 			return false;
 		}
-		PlanActionPK castOther = (PlanActionPK)other;
+		ActionPlanPK castOther = (ActionPlanPK)other;
 		return 
 			(this.planId == castOther.planId)
 			&& (this.actionId == castOther.actionId);

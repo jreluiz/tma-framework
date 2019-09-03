@@ -1,4 +1,4 @@
-package eubr.atmosphere.tma.qualitymodel.entity;
+package eubr.atmosphere.tma.entity.qualitymodel;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -38,7 +38,7 @@ public class CompositeAttribute extends Attribute implements Serializable {
 	private AttributeAggregationOperator operator = AttributeAggregationOperator.NEUTRALITY;
 
 	// bi-directional many-to-one association to Attribute
-	@OneToMany(mappedBy="CompositeAttribute", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy="compositeattribute", fetch = FetchType.EAGER)
 	@Fetch(FetchMode.SUBSELECT)
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private List<Attribute> children;

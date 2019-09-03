@@ -1,4 +1,4 @@
-package eubr.atmosphere.tma.qualitymodel.entity;
+package eubr.atmosphere.tma.entity.qualitymodel;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -18,15 +18,16 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import eubr.atmosphere.tma.entity.plan.Plan;
 import eubr.atmosphere.tma.exceptions.UndefinedException;
 
 /**
  * The persistent class for the attribute database table.
  * @author JorgeLuiz
  */
-@Entity(name="attribute")
+@Entity(name="Attribute")
 @Inheritance(strategy = InheritanceType.JOINED)
-@NamedQuery(name="attribute.findAll", query="SELECT a FROM attribute a")
+@NamedQuery(name="attribute.findAll", query="SELECT a FROM Attribute a")
 public abstract class Attribute implements Serializable {
 
 	private static final long serialVersionUID = 4884416721621562261L;
@@ -49,6 +50,10 @@ public abstract class Attribute implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="compositeattributeId")
 	private CompositeAttribute compositeattribute;
+	
+	//bi-directional one-to-many association to Historicaldata
+	@OneToMany (mappedBy="attribute", fetch = FetchType.LAZY)
+	private List<Plan> plans;
 
 	public abstract HistoricalData calculate(ConfigurationProfile user, Date timestamp) throws UndefinedException;
 

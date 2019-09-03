@@ -1,4 +1,4 @@
-package eubr.atmosphere.tma.qualitymodel.entity;
+package eubr.atmosphere.tma.entity.plan;
 
 import java.io.Serializable;
 
@@ -12,24 +12,24 @@ import javax.persistence.NamedQuery;
  * 
  */
 @Entity
-@NamedQuery(name="ConfigurationData.findAll", query="SELECT c FROM ConfigurationData c")
-public class ConfigurationData implements Serializable {
+@NamedQuery(name="ConfigurationAction.findAll", query="SELECT c FROM ConfigurationAction c")
+public class ConfigurationAction implements Serializable {
 
 	private static final long serialVersionUID = -7685986829731868901L;
 
 	@EmbeddedId
-	private ConfigurationDataPK id;
+	private ConfigurationActionPK id;
 
 	private String value;
 
-	public ConfigurationData() {
+	public ConfigurationAction() {
 	}
 
-	public ConfigurationDataPK getId() {
+	public ConfigurationActionPK getId() {
 		return this.id;
 	}
 
-	public void setId(ConfigurationDataPK id) {
+	public void setId(ConfigurationActionPK id) {
 		this.id = id;
 	}
 

@@ -12,24 +12,23 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eubr.atmosphere.tma.qualitymodel.entity.Data;
-import eubr.atmosphere.tma.qualitymodel.entity.DataPK;
-import eubr.atmosphere.tma.qualitymodel.entity.HistoricalData;
+import eubr.atmosphere.tma.entity.qualitymodel.Data;
+import eubr.atmosphere.tma.entity.qualitymodel.DataPK;
+import eubr.atmosphere.tma.entity.qualitymodel.HistoricalData;
 
 public class QualityModelManager {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(QualityModelManager.class);
 
 	public int saveHistoricalData(HistoricalData historicalData) {
-		String sql = "INSERT INTO HistoricalData(historicalDataId, instant, value, attributeId) VALUES (?, ?, ?, ?)";
+		String sql = "INSERT INTO HistoricalData(instant, value, attributeId) VALUES (?, ?, ?)";
 		PreparedStatement ps;
 
 		try {
 			ps = DatabaseManager.getConnectionInstance().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-			ps.setInt(1, historicalData.getId().getHistoricalDataId());
-			ps.setTimestamp(2, new Timestamp(historicalData.getId().getInstant().getTime()));
-			ps.setDouble(3, historicalData.getValue());
-			ps.setInt(4, historicalData.getAttribute().getAttributeId());
+			ps.setTimestamp(1, new Timestamp(historicalData.getId().getInstant().getTime()));
+			ps.setDouble(2, historicalData.getValue());
+			ps.setInt(3, historicalData.getAttribute().getAttributeId());
 
 			DatabaseManager databaseManager = new DatabaseManager();
 			return databaseManager.execute(ps);
@@ -40,11 +39,11 @@ public class QualityModelManager {
 	}
 	
 	public List<Data> getLimitedDataListByIdAndTimestamp(Integer probeId, Integer descriptionId, Integer resourceId,
-			Date timestamp) {
+			Date date) {
 
 		List<Data> dataList = new ArrayList<>();
 		PreparedStatement ps = null;
-		String sql = "SELECT d.* FROM Date d WHERE d.id.probeId = ? and d.id.descriptionId = ? and d.id.resourceId = ? and d.id.valueTime = ?";
+		String sql = "SELECT d.probeId, d.descriptionId, d.resourceId, d.valueTime, d.metricId, d.value FROM Data d WHERE d.probeId = ? and d.descriptionId = ? and d.resourceId = ? and d.valueTime = ?";
 
 		try {
 
@@ -52,7 +51,7 @@ public class QualityModelManager {
 			ps.setInt(1, probeId);
 			ps.setInt(2, descriptionId);
 			ps.setInt(3, resourceId);
-			ps.setInt(4, probeId);
+			ps.setTimestamp(4, new Timestamp(date.getTime()));
 
 			ResultSet rs = DatabaseManager.executeQuery(ps);
 			if (rs.next()) {

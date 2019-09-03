@@ -1,17 +1,17 @@
-package eubr.atmosphere.tma.qualitymodel.entity;
+package eubr.atmosphere.tma.entity.qualitymodel;
 
 /**
- * Metric normalization kind enumeration
+ * Metric aggregation operator enumeration
  * @author JorgeLuiz
  */
-public enum MetricNormalizationKind {
-
-	BENEFIT(0, "AVERAGE"), COST(1, "MINIMUM");
+public enum MetricAggregationOperator {
+	
+	AVERAGE(0, "AVERAGE"), MINIMUM(1, "MINIMUM"), MAXIMUM(2, "MAXIMUM"), SUM(3, "SUM");
 
 	private Integer valor;
 	private String label;
 
-	private MetricNormalizationKind(Integer valor, String label) {
+	private MetricAggregationOperator(Integer valor, String label) {
 		this.valor = valor;
 		this.label = label;
 	}
@@ -35,5 +35,5 @@ public enum MetricNormalizationKind {
 		}
 		return null;
 	}
-
+	
 }

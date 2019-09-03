@@ -1,4 +1,4 @@
-package eubr.atmosphere.tma.qualitymodel.entity;
+package eubr.atmosphere.tma.entity.qualitymodel;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -21,8 +21,8 @@ import eubr.atmosphere.tma.utils.ListUtils;
  * 
  * @author JorgeLuiz
  */
-@Entity(name = "leafattribute")
-@NamedQuery(name = "leafattribute.findAll", query = "SELECT l FROM leafattribute l")
+@Entity(name = "LeafAttribute")
+@NamedQuery(name = "leafattribute.findAll", query = "SELECT l FROM LeafAttribute l")
 public class Leafattribute extends Attribute implements Serializable {
 
 	private static final long serialVersionUID = 5498567272022007160L;
@@ -103,6 +103,7 @@ public class Leafattribute extends Attribute implements Serializable {
 			if (metric.getAttribute().equals(this)) {
 				// The user-defined metric concerns the same leaf attribute (metric definition)
 				List<Data> data = metric.updateData(timestamp);
+				System.out.println("Data: " + data.size());
 				amount += (double) data.size();
 				Iterator<Data> iterData = data.iterator();
 				while (iterData.hasNext()) {
@@ -112,6 +113,9 @@ public class Leafattribute extends Attribute implements Serializable {
 			}
 		}
 
+		System.out.println("average: " + average);
+		System.out.println("amount: " + amount);
+		
 		if (this.normalizationKind == MetricNormalizationKind.COST) {
 			return 1 - (average / amount);
 		}

@@ -1,4 +1,4 @@
-package eubr.atmosphere.tma.qualitymodel.entity;
+package eubr.atmosphere.tma.entity.qualitymodel;
 
 import java.io.Serializable;
 
@@ -19,8 +19,8 @@ import javax.persistence.OneToOne;
  * The persistent class for the preference database table.
  * @author JorgeLuiz
  */
-@Entity(name="preference")
-@NamedQuery(name="preference.findAll", query="SELECT p FROM preference p")
+@Entity(name="Preference")
+@NamedQuery(name="preference.findAll", query="SELECT p FROM Preference p")
 public class Preference implements Serializable {
 
 	private static final long serialVersionUID = 4897045709573210431L;
@@ -53,6 +53,14 @@ public class Preference implements Serializable {
 		this.attributeId = attributeId;
 		this.threshold = threshold;
 		this.weight = weight;
+	}
+
+	public int getAttributeId() {
+		return attributeId;
+	}
+
+	public void setAttributeId(int attributeId) {
+		this.attributeId = attributeId;
 	}
 
 	public double getThreshold() {

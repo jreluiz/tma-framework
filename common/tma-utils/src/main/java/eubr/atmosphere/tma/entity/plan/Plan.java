@@ -1,4 +1,4 @@
-package eubr.atmosphere.tma.qualitymodel.entity;
+package eubr.atmosphere.tma.entity.plan;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -7,7 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
+
+import eubr.atmosphere.tma.entity.qualitymodel.Attribute;
 
 
 /**
@@ -24,9 +28,12 @@ public class Plan implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int planId;
 
-	private int configurationProfileId;
-
-	private double scoreMax;
+	//bi-directional many-to-one association to Attribute
+	@ManyToOne
+	@JoinColumn(name="attributeId")
+	private Attribute attribute;
+	
+	private double score;
 
 	private int status;
 
@@ -43,20 +50,12 @@ public class Plan implements Serializable {
 		this.planId = planId;
 	}
 
-	public int getConfigurationProfileId() {
-		return this.configurationProfileId;
+	public double getScore() {
+		return score;
 	}
 
-	public void setConfigurationProfileId(int configurationProfileId) {
-		this.configurationProfileId = configurationProfileId;
-	}
-
-	public double getScoreMax() {
-		return this.scoreMax;
-	}
-
-	public void setScoreMax(double scoreMax) {
-		this.scoreMax = scoreMax;
+	public void setScore(double score) {
+		this.score = score;
 	}
 
 	public int getStatus() {

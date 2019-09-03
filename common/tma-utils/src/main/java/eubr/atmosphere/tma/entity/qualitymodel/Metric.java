@@ -1,6 +1,5 @@
-package eubr.atmosphere.tma.qualitymodel.entity;
+package eubr.atmosphere.tma.entity.qualitymodel;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,8 +22,8 @@ import eubr.atmosphere.tma.database.QualityModelManager;
  * The persistent class for the metric database table.
  * @author JorgeLuiz
  */
-@Entity(name="metricqm")
-@NamedQuery(name="metricqm.findAll", query="SELECT m FROM metricqm m")
+@Entity(name="Metric")
+@NamedQuery(name="metric.findAll", query="SELECT m FROM Metric m")
 public class Metric {
 
 	@Id
@@ -53,9 +52,13 @@ public class Metric {
 	@JoinColumn(name="attributeId")
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private Leafattribute attribute;
-
+	
 	//bi-directional many-to-one association to Data
-//	@OneToMany(mappedBy="metricId")
+//	@OneToMany(mappedBy="metric", fetch = FetchType.EAGER)
+//	@Fetch(FetchMode.SUBSELECT)
+//	@LazyCollection(LazyCollectionOption.FALSE)
+//	private Set<Data> data;
+	
 	@Transient
 	private List<Data> data;
 	
@@ -65,6 +68,30 @@ public class Metric {
 
 	public void setAttributeId(int attributeId) {
 		this.attributeId = attributeId;
+	}
+
+	public Integer getDescriptionId() {
+		return descriptionId;
+	}
+
+	public void setDescriptionId(Integer descriptionId) {
+		this.descriptionId = descriptionId;
+	}
+
+	public Integer getProbeId() {
+		return probeId;
+	}
+
+	public void setProbeId(Integer probeId) {
+		this.probeId = probeId;
+	}
+
+	public Integer getResourceId() {
+		return resourceId;
+	}
+
+	public void setResourceId(Integer resourceId) {
+		this.resourceId = resourceId;
 	}
 
 	public String getDescriptionName() {
@@ -107,16 +134,16 @@ public class Metric {
 		this.attribute = attribute;
 	}
 
-	public List<Data> getData() {
-		if (this.data == null) {
-			this.data = new ArrayList<Data>();
-		}
-		return this.data;
-	}
-
-	public void setData(List<Data> data) {
-		this.data = data;
-	}
+//	public Set<Data> getData() {
+//		if (this.data == null) {
+//			this.data = new HashSet<>();
+//		}
+//		return this.data;
+//	}
+//
+//	public void setData(Set<Data> data) {
+//		this.data = data;
+//	}
 	
 	public List<Data> updateData(Date timestamp) {
 		

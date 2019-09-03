@@ -1,12 +1,17 @@
-package eubr.atmosphere.tma.qualitymodel.entity;
+package eubr.atmosphere.tma.entity.plan;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
+
+import eubr.atmosphere.tma.entity.qualitymodel.Actuator;
 
 
 /**
@@ -25,8 +30,11 @@ public class Action implements Serializable {
 
 	private String actionName;
 
-	private int actuatorId;
-
+	//bi-directional one-to-one association to Actuator
+	@OneToOne (cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name="actuatorId")
+	private Actuator actuatorId;
+	
 	public Action() {
 	}
 
@@ -46,11 +54,11 @@ public class Action implements Serializable {
 		this.actionName = actionName;
 	}
 
-	public int getActuatorId() {
-		return this.actuatorId;
+	public Actuator getActuatorId() {
+		return actuatorId;
 	}
 
-	public void setActuatorId(int actuatorId) {
+	public void setActuatorId(Actuator actuatorId) {
 		this.actuatorId = actuatorId;
 	}
 
