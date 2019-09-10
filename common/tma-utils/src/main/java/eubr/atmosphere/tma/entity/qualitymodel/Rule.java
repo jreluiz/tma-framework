@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -33,7 +34,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 @Table(name="Rule")
 @Inheritance(strategy = InheritanceType.JOINED)
 @NamedQuery(name="Rule.findAll", query="SELECT r FROM Rule r")
-public abstract class Rule implements Serializable {
+public class Rule implements Serializable {
 	
 	private static final long serialVersionUID = 6163237338626808371L;
 
@@ -48,7 +49,7 @@ public abstract class Rule implements Serializable {
 	private CompositeRule compositeRule;
 	
 	//bi-directional many-to-one association to CompositeAttribute
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name="compositeattributeId")
 	private CompositeAttribute compositeattribute;
 	
@@ -56,13 +57,13 @@ public abstract class Rule implements Serializable {
 	private String name;
 	
 	//bi-directional many-to-one association to Conditional
-	@OneToMany(mappedBy="rule", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy="rule", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@Fetch(FetchMode.SUBSELECT)
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private Set<Conditional> conditions;
 	
 	//bi-directional many-to-one association to Conditional
-	@OneToMany(mappedBy="rule", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy="rule", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@Fetch(FetchMode.SUBSELECT)
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private Set<ActionRule> actions;
@@ -70,7 +71,7 @@ public abstract class Rule implements Serializable {
 	@Column
 	protected RuleType ruleType;
 	
-	public abstract Rule buildRule(TrustworthinessObject dataObject, String parentRuleName);
+	public void buildRule(TrustworthinessObject dataObject, String parentRuleName) {}
 	
 	@Transient
 	private TrustworthinessObject object;

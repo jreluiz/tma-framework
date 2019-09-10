@@ -13,6 +13,8 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
+import eubr.atmosphere.tma.utils.ListUtils;
+
 
 /**
  * The persistent class for the CompositeRule database table.
@@ -34,17 +36,21 @@ public class CompositeRule extends Rule implements Serializable {
 	}
 
 	@Override
-	public Rule buildRule(TrustworthinessObject dataObject, String parentRuleName) {
+	public void buildRule(TrustworthinessObject dataObject, String parentRuleName) {
+
 		this.setDataObject(dataObject);
 		if (parentRuleName != null) {
 			this.setName(this.getName() + "\" extends " + "\"" + parentRuleName);
 		}
 		
-		for (Rule rule : children) {
-			rule.buildRule(dataObject, this.getName());
+		if (ListUtils.isNotEmpty(children)) {
+			for (Rule rule : children) {
+				if ( !rule.equals(this) ) {
+					rule.buildRule(dataObject, this.getName());
+				}
+			}
 		}
 		
-		return this;
 	}
 	
 }

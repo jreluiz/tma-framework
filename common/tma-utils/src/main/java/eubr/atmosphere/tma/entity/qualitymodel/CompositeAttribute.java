@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -37,7 +38,7 @@ import eubr.atmosphere.tma.utils.ListUtils;
 public class CompositeAttribute extends Attribute implements Serializable {
 
 	private static final long serialVersionUID = -833533561010795503L;
-
+	
 	@Enumerated(EnumType.ORDINAL)
 	private AttributeAggregationOperator operator = AttributeAggregationOperator.NEUTRALITY;
 
@@ -48,7 +49,7 @@ public class CompositeAttribute extends Attribute implements Serializable {
 	private List<Attribute> children;
 	
 	//bi-directional many-to-one association to Rule
-	@OneToMany(mappedBy="compositeattribute", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy="compositeattribute", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
 	@Fetch(FetchMode.SUBSELECT)
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private Set<Rule> rules;
@@ -60,6 +61,7 @@ public class CompositeAttribute extends Attribute implements Serializable {
 	}
 
 	public void initRules() {
+		System.out.println("initRules");
 		compositeRules = new HashMap<>();
 	}
 	
@@ -67,19 +69,41 @@ public class CompositeAttribute extends Attribute implements Serializable {
 		
 		Rule rootRule = null;
 		
+		System.out.println("buildRules - attributeType " + attributeType);
+		
 		switch (attributeType) {
 		
 		case ROOT:
 			
+			System.out.println("init ROOT type ");
+			
+			System.out.println("rule names antes:");
+			for (Rule r : rules) {
+				System.out.println(r.getName());
+			}
+			
 			rootRule = getRootRule();
 			rootRule.buildRule(dataObject, null);
 			
+			System.out.println("rule names depois:");
+			for (Rule r : rules) {
+				System.out.println(r.getName());
+			}
+			
 			compositeRules.put(this, rules);
+			
+			System.out.println("children size: " + children.size());
 			
 			// building children rules
 			for (Attribute c : children) {
-				if (c instanceof CompositeAttribute) {
-					buildRules(dataObject);
+				
+				System.out.println("attribute name1: " + c.getName());
+				
+				if (c instanceof CompositeAttribute && !c.equals(this)) {
+					
+					System.out.println("attribute name2: " + c.getName());
+					
+					((CompositeAttribute) c).buildRules(dataObject);
 				}
 			}
 			
@@ -255,14 +279,6 @@ public class CompositeAttribute extends Attribute implements Serializable {
 		attribute.setCompositeattribute(null);
 
 		return attribute;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((operator == null) ? 0 : operator.hashCode());
-		return result;
 	}
 
 	@Override

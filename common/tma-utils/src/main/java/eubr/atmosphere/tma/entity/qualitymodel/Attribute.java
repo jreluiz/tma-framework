@@ -118,7 +118,6 @@ public abstract class Attribute implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + attributeId;
-		result = prime * result + ((compositeattribute == null) ? 0 : compositeattribute.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((preference == null) ? 0 : preference.hashCode());
 		return result;
