@@ -118,4 +118,10 @@ public class ActionRule implements Serializable {
 		this.value = value;
 	}
 
+	@Override
+	public String toString() {
+		return "ActionRule [actionRuleId=" + actionRuleId + ", actionName=" + actionName + ", domain=" + domain
+				+ ", keyName=" + keyName + ", value=" + value + "]";
+	}
+
 }

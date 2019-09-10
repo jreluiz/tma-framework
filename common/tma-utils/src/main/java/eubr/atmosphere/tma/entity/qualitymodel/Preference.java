@@ -4,8 +4,6 @@ import java.io.Serializable;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -32,9 +30,6 @@ public class Preference implements Serializable {
 	private double threshold;
 
 	private double weight;
-	
-	@Enumerated(EnumType.ORDINAL)
-	private AttributeType attributeType = AttributeType.ROOT;
 
 	//bi-directional many-to-one association to Configurationprofile
 	@ManyToOne
@@ -93,14 +88,6 @@ public class Preference implements Serializable {
 
 	public void setAttribute(Attribute attribute) {
 		this.attribute = attribute;
-	}
-
-	public AttributeType getAttributeType() {
-		return attributeType;
-	}
-
-	public void setAttributeType(AttributeType attributeType) {
-		this.attributeType = attributeType;
 	}
 
 	@Override

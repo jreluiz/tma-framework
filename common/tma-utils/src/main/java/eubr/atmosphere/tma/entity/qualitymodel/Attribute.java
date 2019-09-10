@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -38,8 +40,11 @@ public abstract class Attribute implements Serializable {
 
 	private String name;
 
+	@Enumerated(EnumType.ORDINAL)
+	protected AttributeType attributeType = AttributeType.ROOT;
+	
 	//bi-directional one-to-many association to Historicaldata
-	@OneToMany (mappedBy="attribute", fetch = FetchType.LAZY)
+	@OneToMany (mappedBy="attribute", fetch = FetchType.EAGER)
 	private List<HistoricalData> historicaldata;
 
 	//bi-directional one-to-one association to Preference
@@ -74,6 +79,14 @@ public abstract class Attribute implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public AttributeType getAttributeType() {
+		return attributeType;
+	}
+
+	public void setAttributeType(AttributeType attributeType) {
+		this.attributeType = attributeType;
 	}
 
 	public CompositeAttribute getCompositeattribute() {

@@ -47,6 +47,13 @@ public class Conditional implements Serializable {
 	public Conditional() {
 	}
 
+	public Conditional(String property, ConditionalOperator operator, String value) {
+		super();
+		this.operator = operator;
+		this.property = property;
+		this.value = value;
+	}
+
 	public int getConditionId() {
 		return this.conditionId;
 	}
@@ -87,4 +94,56 @@ public class Conditional implements Serializable {
 		this.value = value;
 	}
 
+	/**
+	 * Convert the condition to textual expression.
+	 * 
+	 * @return The expression of this condition in dialect.
+	 * @throws IllegalArgumentException Indicates the use of invalid pair of value
+	 *                                  and condition.
+	 */
+	public String buildExpression() throws IllegalArgumentException {
+		StringBuilder drl = new StringBuilder();
+
+		if (value instanceof String) {
+			drl.append(expressionForStringValue());
+		} else {
+			throw new IllegalArgumentException(
+					"The class " + value.getClass().getSimpleName() + " of value is not acceptable.");
+		}
+
+		return drl.toString();
+	}
+
+	/**
+	 * Convert the condition for <b>String</b> value in expression.
+	 * 
+	 * @return Expression in dialect.
+	 * @throws IllegalArgumentException Indicates the use of invalid pair of value
+	 *                                  and condition.
+	 */
+	private String expressionForStringValue() throws IllegalArgumentException {
+		StringBuilder drl = new StringBuilder();
+
+		if (operator.isComparable(String.class)) {
+			if (operator.equals(ConditionalOperator.CONTAINS)) {
+				drl.append(property).append(".toUpperCase().contains(\"").append(((String) value).toUpperCase())
+						.append("\")");
+			} else {
+				drl.append(property).append(" ").append(operator.getOperation()).append(" ").append("\"").append(value)
+						.append("\"");
+			}
+		} else {
+			throw new IllegalArgumentException("Is not possible to use the operator " + operator.getDescription()
+					+ " to a " + value.getClass().getSimpleName() + " object.");
+		}
+
+		return drl.toString();
+	}
+
+	@Override
+	public String toString() {
+		return "Conditional [conditionId=" + conditionId + ", operator=" + operator + ", property=" + property
+				+ ", value=" + value + "]";
+	}
+	
 }
