@@ -21,7 +21,7 @@ public class LeafRule extends Rule implements Serializable {
 	}
 
 	@Override
-	public void buildRule(TrustworthinessObject dataObject, String parentRuleName) {
+	public void buildRule(String dataObject, String parentRuleName) {
 		this.setDataObject(dataObject);
 		this.setName(this.getName() + "\" extends " + "\"" + parentRuleName);
 	}

@@ -105,7 +105,7 @@ public class Conditional implements Serializable {
 		StringBuilder drl = new StringBuilder();
 
 		if (value instanceof String) {
-			drl.append(expressionForStringValue());
+			drl.append(expressionForNumberValue());
 		} else {
 			throw new IllegalArgumentException(
 					"The class " + value.getClass().getSimpleName() + " of value is not acceptable.");
@@ -132,6 +132,29 @@ public class Conditional implements Serializable {
 				drl.append(property).append(" ").append(operator.getOperation()).append(" ").append("\"").append(value)
 						.append("\"");
 			}
+		} else {
+			throw new IllegalArgumentException("Is not possible to use the operator " + operator.getDescription()
+					+ " to a " + value.getClass().getSimpleName() + " object.");
+		}
+
+		return drl.toString();
+	}
+	
+	/**
+	 * Convert the condition for <b>Integer</b>, <b>Double</b>, <b>Float</b> or
+	 * <b>String</b> value in expression.
+	 * 
+	 * @return Expression in dialect.
+	 * @throws IllegalArgumentException Indicates the use of invalid pair of value
+	 *                                  and condition.
+	 */
+	private String expressionForNumberValue() throws IllegalArgumentException {
+		StringBuilder drl = new StringBuilder();
+
+		if ((operator.isComparable(Short.class)) || (operator.isComparable(Integer.class))
+				|| (operator.isComparable(Long.class)) || (operator.isComparable(Double.class))
+				|| (operator.isComparable(Float.class)) || (operator.isComparable(String.class)) ) {
+			drl.append(property).append(" ").append(operator.getOperation()).append(" ").append(value);
 		} else {
 			throw new IllegalArgumentException("Is not possible to use the operator " + operator.getDescription()
 					+ " to a " + value.getClass().getSimpleName() + " object.");

@@ -2,6 +2,7 @@ package eubr.atmosphere.tma.entity.qualitymodel;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -71,10 +72,10 @@ public class Rule implements Serializable {
 	@Column
 	protected RuleType ruleType;
 	
-	public void buildRule(TrustworthinessObject dataObject, String parentRuleName) {}
+	public void buildRule(String dataObject, String parentRuleName) {}
 	
 	@Transient
-	private TrustworthinessObject object;
+	private String object;
 	
 	public Rule() {
 	}
@@ -153,18 +154,36 @@ public class Rule implements Serializable {
 	 * @throws IllegalStateException Indicate a non valid rule.
 	 */
 	public Map<String, Object> asMap() throws IllegalStateException {
-		if ((name == null) || (object == null) || (actions == null || actions.isEmpty())) {
+		if ((getName() == null) || (getDataObject() == null)) {
 			throw new IllegalArgumentException(
-					"The rule has no name, object to be evaluated or action to be accomplished.");
+					"The rule has no name or object to be evaluated to be accomplished.");
 		}
 
 		Map<String, Object> attributes = new HashMap<String, Object>();
 		attributes.put(Rule.Attribute.RULE_NAME.toString(), name);
 		attributes.put(Rule.Attribute.DATA_OBJECT.toString(), object);
 		attributes.put(Rule.Attribute.CONDITIONAL.toString(), conditionAsDRL());
-		attributes.put(Rule.Attribute.ACTIONS.toString(), actions);
+		attributes.put(Rule.Attribute.ACTIONS.toString(), getActionsIds());
 
 		return attributes;
+	}
+	
+	private String getActionsIds() {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("\"");
+		
+		Iterator<ActionRule> it = actions.iterator();
+		while(it.hasNext()) {
+			ActionRule actionRule = it.next();
+			sb.append(actionRule.getActionRuleId());
+			if (it.hasNext()) {
+				sb.append(";");
+			}
+		}
+		sb.append("\"");
+		
+		return sb.toString();
 	}
 
 	/**
@@ -228,12 +247,20 @@ public class Rule implements Serializable {
 		this.ruleType = ruleType;
 	}
 
-	public TrustworthinessObject getObject() {
+	public String getDataObject() {
 		return object;
 	}
 
-	public void setDataObject(TrustworthinessObject object) {
+	public void setDataObject(String object) {
 		this.object = object;
+	}
+
+	public Set<Conditional> getConditions() {
+		return conditions;
+	}
+
+	public Set<ActionRule> getActions() {
+		return actions;
 	}
 	
 }
