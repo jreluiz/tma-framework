@@ -63,11 +63,16 @@ public class CompositeAttribute extends Attribute implements Serializable {
 	public void initRules() {
 		System.out.println("initRules");
 		compositeRules = new HashMap<>();
+		
+		for (Rule r : rules) {
+			
+		}
+		
 	}
 	
-	public Map<CompositeAttribute, Set<Rule>> buildRules(TrustworthinessObject dataObject) {
+	public Map<CompositeAttribute, Set<Rule>> buildRules(String dataObject) {
 		
-		Rule rootRule = null;
+		List<CompositeRule> rootRules = null;
 		
 		System.out.println("buildRules - attributeType " + attributeType);
 		
@@ -82,8 +87,11 @@ public class CompositeAttribute extends Attribute implements Serializable {
 				System.out.println(r.getName());
 			}
 			
-			rootRule = getRootRule();
-			rootRule.buildRule(dataObject, null);
+			rootRules = getRootRules();
+			for (CompositeRule rr : rootRules) {
+				rr.buildRule(dataObject, null);	
+			}
+			
 			
 			System.out.println("rule names depois:");
 			for (Rule r : rules) {
@@ -111,8 +119,10 @@ public class CompositeAttribute extends Attribute implements Serializable {
 			
 		case COMPOSITE:
 
-			rootRule = getRootRule();
-			rootRule.buildRule(dataObject, null);
+			rootRules = getRootRules();
+			for (CompositeRule rr : rootRules) {
+				rr.buildRule(dataObject, null);	
+			}
 			
 			compositeRules.put(this, rules);
 			
@@ -124,15 +134,16 @@ public class CompositeAttribute extends Attribute implements Serializable {
 		return compositeRules;
 	}
 	
-	private CompositeRule getRootRule() {
+	private List<CompositeRule> getRootRules() {
+		List<CompositeRule> rootRulesList = new ArrayList<>();
 		for (Rule rule : rules) {
-			if ( rule.getRuleType().isRoot() ) {
-				return (CompositeRule) rule;
+			if (rule.getRuleType().isRoot()) {
+				rootRulesList.add((CompositeRule) rule);
 			}
 		}
-		return null;
+		return rootRulesList;
 	}
-	
+
 	protected double calculateNeutralityi(ConfigurationProfile profile, Date timestamp) throws UndefinedException {
 		double score = 0.0;
 		if (ListUtils.isNotEmpty(children)) {

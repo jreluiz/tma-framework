@@ -10,37 +10,37 @@ public enum ConditionalOperator {
 	/**
      * The value is not equal to
      */
-    NOT_EQUAL_TO(1, "Not equal to", "!=", (new ArrayList<Class>()
+    NOT_EQUAL_TO(0, "Not equal to", "!=", (new ArrayList<Class>()
     {
       {
         add(String.class);
-				add(Double.class);
-				add(Float.class);
-				add(Integer.class);
-				add(Short.class);
-				add(Long.class);
-				add(Date.class);
+		add(Double.class);
+		add(Float.class);
+		add(Integer.class);
+		add(Short.class);
+		add(Long.class);
+		add(Date.class);
       }
     })),
     /**
      * The value is equal to
      */
-    EQUAL_TO(2, "Equal to", "==", (new ArrayList<Class>()
+    EQUAL_TO(1, "Equal to", "==", (new ArrayList<Class>()
     {
       {
         add(String.class);
-				add(Double.class);
-				add(Float.class);
-				add(Integer.class);
-				add(Short.class);
-				add(Long.class);
-				add(Date.class);
+		add(Double.class);
+		add(Float.class);
+		add(Integer.class);
+		add(Short.class);
+		add(Long.class);
+		add(Date.class);
       }
     })),
     /**
      * The value contains
      */
-    CONTAINS(3, "Contains this", "?", (new ArrayList<Class>()
+    CONTAINS(2, "Contains this", "?", (new ArrayList<Class>()
     {
       {
         add(String.class);
@@ -49,57 +49,61 @@ public enum ConditionalOperator {
     /**
      * The value is greater than
      */
-    GREATER_THAN(4, "Greater than", ">", (new ArrayList<Class>()
+    GREATER_THAN(3, "Greater than", ">", (new ArrayList<Class>()
     {
       {
-				add(Double.class);
-				add(Float.class);
-				add(Integer.class);
-				add(Short.class);
-				add(Long.class);
-				add(Date.class);
+    	add(String.class);
+		add(Double.class);
+		add(Float.class);
+		add(Integer.class);
+		add(Short.class);
+		add(Long.class);
+		add(Date.class);
       }
     })),
     /**
      * The value is less than
      */
-    LESS_THAN(5, "Less than", "<", (new ArrayList<Class>()
+    LESS_THAN(4, "Less than", "<", (new ArrayList<Class>()
     {
       {
-				add(Double.class);
-				add(Float.class);
-				add(Integer.class);
-				add(Short.class);
-				add(Long.class);
-				add(Date.class);
+    	add(String.class);
+		add(Double.class);
+		add(Float.class);
+		add(Integer.class);
+		add(Short.class);
+		add(Long.class);
+		add(Date.class);
       }
     })),
     /**
      * The value is greater or equal to
      */
-    GREATER_THAN_OR_EQUAL_TO(6, "Greater or equal to", ">=", (new ArrayList<Class>()
+    GREATER_THAN_OR_EQUAL_TO(5, "Greater or equal to", ">=", (new ArrayList<Class>()
     {
       {
-				add(Double.class);
-				add(Float.class);
-				add(Integer.class);
-				add(Short.class);
-				add(Long.class);
-				add(Date.class);
+    	add(String.class);
+		add(Double.class);
+		add(Float.class);
+		add(Integer.class);
+		add(Short.class);
+		add(Long.class);
+		add(Date.class);
       }
     })),
     /**
      * The value is less or equal to
      */
-    LESS_THAN_OR_EQUAL_TO(7, "Less or equal to", "<=", (new ArrayList<Class>()
+    LESS_THAN_OR_EQUAL_TO(6, "Less or equal to", "<=", (new ArrayList<Class>()
     {
       {
-				add(Double.class);
-				add(Float.class);
-				add(Integer.class);
-				add(Short.class);
-				add(Long.class);
-				add(Date.class);
+    	add(String.class);
+		add(Double.class);
+		add(Float.class);
+		add(Integer.class);
+		add(Short.class);
+		add(Long.class);
+		add(Date.class);
       }
     }));
 

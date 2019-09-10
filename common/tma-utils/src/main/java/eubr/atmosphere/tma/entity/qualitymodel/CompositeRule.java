@@ -36,7 +36,7 @@ public class CompositeRule extends Rule implements Serializable {
 	}
 
 	@Override
-	public void buildRule(TrustworthinessObject dataObject, String parentRuleName) {
+	public void buildRule(String dataObject, String parentRuleName) {
 
 		this.setDataObject(dataObject);
 		if (parentRuleName != null) {
