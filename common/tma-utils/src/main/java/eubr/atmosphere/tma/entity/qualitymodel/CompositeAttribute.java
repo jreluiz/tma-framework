@@ -61,56 +61,27 @@ public class CompositeAttribute extends Attribute implements Serializable {
 	}
 
 	public void initRules() {
-		System.out.println("initRules");
 		compositeRules = new HashMap<>();
-		
-		for (Rule r : rules) {
-			
-		}
-		
 	}
 	
 	public Map<CompositeAttribute, Set<Rule>> buildRules(String dataObject) {
 		
 		List<CompositeRule> rootRules = null;
 		
-		System.out.println("buildRules - attributeType " + attributeType);
-		
 		switch (attributeType) {
 		
 		case ROOT:
-			
-			System.out.println("init ROOT type ");
-			
-			System.out.println("rule names antes:");
-			for (Rule r : rules) {
-				System.out.println(r.getName());
-			}
 			
 			rootRules = getRootRules();
 			for (CompositeRule rr : rootRules) {
 				rr.buildRule(dataObject, null);	
 			}
 			
-			
-			System.out.println("rule names depois:");
-			for (Rule r : rules) {
-				System.out.println(r.getName());
-			}
-			
 			compositeRules.put(this, rules);
-			
-			System.out.println("children size: " + children.size());
 			
 			// building children rules
 			for (Attribute c : children) {
-				
-				System.out.println("attribute name1: " + c.getName());
-				
-				if (c instanceof CompositeAttribute && !c.equals(this)) {
-					
-					System.out.println("attribute name2: " + c.getName());
-					
+				if (c instanceof CompositeAttribute && !c.equals(this)) {					
 					((CompositeAttribute) c).buildRules(dataObject);
 				}
 			}
@@ -127,6 +98,7 @@ public class CompositeAttribute extends Attribute implements Serializable {
 			compositeRules.put(this, rules);
 			
 			break;
+			
 		default:
 			break;
 		}

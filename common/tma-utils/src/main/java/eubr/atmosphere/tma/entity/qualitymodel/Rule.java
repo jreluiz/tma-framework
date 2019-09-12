@@ -70,7 +70,13 @@ public class Rule implements Serializable {
 	private Set<ActionRule> actions;
 	
 	@Column
-	protected RuleType ruleType;
+	private RuleStatus ruleStatus;
+	
+	@Column
+	private RuleType ruleType;
+	
+	@Column
+	private Integer importance;
 	
 	public void buildRule(String dataObject, String parentRuleName) {}
 	
@@ -164,6 +170,7 @@ public class Rule implements Serializable {
 		attributes.put(Rule.Attribute.DATA_OBJECT.toString(), object);
 		attributes.put(Rule.Attribute.CONDITIONAL.toString(), conditionAsDRL());
 		attributes.put(Rule.Attribute.ACTIONS.toString(), getActionsIds());
+		attributes.put(Rule.Attribute.PRIORITY.toString(), importance);
 
 		return attributes;
 	}
@@ -222,10 +229,14 @@ public class Rule implements Serializable {
 		/**
 		 * Action to take.
 		 */
-		ACTIONS("actions");
+		ACTIONS("actions"),
+		/**
+		 * Action to take.
+		 */
+		PRIORITY("priority");
 
 		/**
-		 * Name used in template to assign each attirbute.
+		 * Name used in template to assign each attribute.
 		 */
 		private final String name;
 
@@ -239,12 +250,28 @@ public class Rule implements Serializable {
 		}
 	}
 	
+	public RuleStatus getRuleStatus() {
+		return ruleStatus;
+	}
+
+	public void setRuleStatus(RuleStatus ruleStatus) {
+		this.ruleStatus = ruleStatus;
+	}
+
 	public RuleType getRuleType() {
 		return ruleType;
 	}
 
 	public void setRuleType(RuleType ruleType) {
 		this.ruleType = ruleType;
+	}
+
+	public Integer getImportance() {
+		return importance;
+	}
+
+	public void setImportance(Integer importance) {
+		this.importance = importance;
 	}
 
 	public String getDataObject() {
