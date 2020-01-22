@@ -73,9 +73,6 @@ public class Rule implements Serializable {
 	private boolean enabled;
 	
 	@Column
-	private RuleType ruleType;
-	
-	@Column
 	private Integer priority;
 	
 	public void buildRule(String dataObject, String parentRuleName) {}
@@ -261,14 +258,6 @@ public class Rule implements Serializable {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
-	}
-
-	public RuleType getRuleType() {
-		return ruleType;
-	}
-
-	public void setRuleType(RuleType ruleType) {
-		this.ruleType = ruleType;
 	}
 
 	public Integer getPriority() {
