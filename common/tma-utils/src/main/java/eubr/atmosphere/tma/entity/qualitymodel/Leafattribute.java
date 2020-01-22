@@ -65,7 +65,6 @@ public class Leafattribute extends Attribute implements Serializable {
 		}
 
 		HistoricalData d = new HistoricalData();
-		d.setInstant(new Timestamp(System.currentTimeMillis()));
 		d.setAttribute(profile.getPreference(this).getAttribute());
 
 		System.out.println("Attribute leaf: " + profile.getPreference(this).getAttribute());
@@ -88,6 +87,7 @@ public class Leafattribute extends Attribute implements Serializable {
 		}
 
 		QualityModelManager qmm = new QualityModelManager();
+		d.setInstant(new Timestamp(System.currentTimeMillis()));
 		qmm.saveHistoricalData(d);
 
 		return d;

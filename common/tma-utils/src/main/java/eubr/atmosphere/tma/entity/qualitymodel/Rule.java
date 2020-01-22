@@ -70,13 +70,10 @@ public class Rule implements Serializable {
 	private Set<ActionRule> actions;
 	
 	@Column
-	private RuleStatus ruleStatus;
+	private boolean enabled;
 	
 	@Column
-	private RuleType ruleType;
-	
-	@Column
-	private Integer importance;
+	private Integer priority;
 	
 	public void buildRule(String dataObject, String parentRuleName) {}
 	
@@ -170,7 +167,8 @@ public class Rule implements Serializable {
 		attributes.put(Rule.Attribute.DATA_OBJECT.toString(), object);
 		attributes.put(Rule.Attribute.CONDITIONAL.toString(), conditionAsDRL());
 		attributes.put(Rule.Attribute.ACTIONS.toString(), getActionsIds());
-		attributes.put(Rule.Attribute.PRIORITY.toString(), importance);
+		attributes.put(Rule.Attribute.PRIORITY.toString(), priority);
+		attributes.put(Rule.Attribute.ENABLED.toString(), enabled);
 
 		return attributes;
 	}
@@ -231,10 +229,14 @@ public class Rule implements Serializable {
 		 */
 		ACTIONS("actions"),
 		/**
-		 * Action to take.
+		 * Execution priority.
 		 */
-		PRIORITY("priority");
-
+		PRIORITY("priority"),
+		/**
+		 * Rule active
+		 */
+		ENABLED("active");
+		
 		/**
 		 * Name used in template to assign each attribute.
 		 */
@@ -249,29 +251,21 @@ public class Rule implements Serializable {
 			return name;
 		}
 	}
-	
-	public RuleStatus getRuleStatus() {
-		return ruleStatus;
+
+	public boolean isEnabled() {
+		return enabled;
 	}
 
-	public void setRuleStatus(RuleStatus ruleStatus) {
-		this.ruleStatus = ruleStatus;
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
-	public RuleType getRuleType() {
-		return ruleType;
+	public Integer getPriority() {
+		return priority;
 	}
 
-	public void setRuleType(RuleType ruleType) {
-		this.ruleType = ruleType;
-	}
-
-	public Integer getImportance() {
-		return importance;
-	}
-
-	public void setImportance(Integer importance) {
-		this.importance = importance;
+	public void setPriority(Integer priority) {
+		this.priority = priority;
 	}
 
 	public String getDataObject() {

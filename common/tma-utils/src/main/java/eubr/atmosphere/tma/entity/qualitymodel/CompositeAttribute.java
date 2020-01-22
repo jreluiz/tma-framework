@@ -28,6 +28,7 @@ import eubr.atmosphere.tma.exceptions.UndefinedException;
 import eubr.atmosphere.tma.exceptions.UndefinedMetricException;
 import eubr.atmosphere.tma.exceptions.UndefinedPreferenceException;
 import eubr.atmosphere.tma.utils.ListUtils;
+import eubr.atmosphere.tma.utils.TreeUtils;
 
 /**
  * The persistent class for the CompositeAttribute database table.
@@ -55,7 +56,7 @@ public class CompositeAttribute extends Attribute implements Serializable {
 	private Set<Rule> rules;
 	
 	@Transient
-	private Map<CompositeAttribute, Set<Rule>> compositeRules;
+	private Map<CompositeAttribute, List<Rule>> compositeRules;
 	
 	public CompositeAttribute() {
 	}
@@ -64,20 +65,19 @@ public class CompositeAttribute extends Attribute implements Serializable {
 		compositeRules = new HashMap<>();
 	}
 	
-	public Map<CompositeAttribute, Set<Rule>> buildRules(String dataObject) {
+	public Map<CompositeAttribute, List<Rule>> buildRules(String dataObject) {
 		
 		List<CompositeRule> rootRules = null;
-		
-		switch (attributeType) {
-		
-		case ROOT:
+		TreeUtils treeUtils = TreeUtils.getInstance();
+
+		if ( treeUtils.isRootAttribute(this) ) {
 			
-			rootRules = getRootRules();
+			rootRules = treeUtils.getRootRules(rules);
 			for (CompositeRule rr : rootRules) {
 				rr.buildRule(dataObject, null);	
 			}
 			
-			compositeRules.put(this, rules);
+			compositeRules.put(this, new ArrayList<>(rules));
 			
 			// building children rules
 			for (Attribute c : children) {
@@ -86,51 +86,18 @@ public class CompositeAttribute extends Attribute implements Serializable {
 				}
 			}
 			
-			break;
+		} else {
 			
-		case COMPOSITE:
-
-			rootRules = getRootRules();
+			rootRules = treeUtils.getRootRules(rules);
 			for (CompositeRule rr : rootRules) {
 				rr.buildRule(dataObject, null);	
 			}
 			
-			compositeRules.put(this, rules);
+			compositeRules.put(this, new ArrayList<>(rules));
 			
-			break;
-			
-		default:
-			break;
 		}
 		
 		return compositeRules;
-	}
-	
-	private List<CompositeRule> getRootRules() {
-		List<CompositeRule> rootRulesList = new ArrayList<>();
-		for (Rule rule : rules) {
-			if (rule.getRuleType().isRoot()) {
-				rootRulesList.add((CompositeRule) rule);
-			}
-		}
-		return rootRulesList;
-	}
-
-	protected double calculateNeutralityi(ConfigurationProfile profile, Date timestamp) throws UndefinedException {
-		double score = 0.0;
-		if (ListUtils.isNotEmpty(children)) {
-			for (Attribute child : children) {
-				if (!child.equals(this)) {
-					Preference childPref = profile.getPreference(child);
-					try {
-						score += child.calculate(profile, timestamp).getValue() * childPref.getWeight();
-					} catch (UndefinedMetricException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-		return score;
 	}
 	
 	public HistoricalData calculate(ConfigurationProfile profile, Date timestamp) throws UndefinedException {
@@ -283,4 +250,12 @@ public class CompositeAttribute extends Attribute implements Serializable {
 		return "CompositeAttribute [operator=" + operator + "]";
 	}
 
+	public boolean isRootAttribute() {
+		Attribute attr = getPreference().getAttribute();
+		if (attr.getAttributeId() == attr.getCompositeattribute().getAttributeId()) { // attribute is his own composite
+			return true;
+		}
+		return false;
+	}
+	
 }
