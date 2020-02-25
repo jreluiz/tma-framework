@@ -30,27 +30,23 @@ public class Conditional implements Serializable {
 	@Column(unique=true, nullable=false)
 	private int conditionId;
 
-	@Enumerated(EnumType.ORDINAL)
-	private ConditionalOperator operator = ConditionalOperator.EQUAL_TO;
-
-	@Column
-	private String property;
-
 	//bi-directional many-to-one association to Rule
 	@ManyToOne
 	@JoinColumn(name="ruleId")
 	private Rule rule;
 
+	@Enumerated(EnumType.ORDINAL)
+	private ConditionalOperator conditionalOperator = ConditionalOperator.EQUAL_TO;
+	
 	@Column
 	private String value;
 
 	public Conditional() {
 	}
 
-	public Conditional(String property, ConditionalOperator operator, String value) {
+	public Conditional(ConditionalOperator operator, String value) {
 		super();
-		this.operator = operator;
-		this.property = property;
+		this.conditionalOperator = operator;
 		this.value = value;
 	}
 
@@ -62,20 +58,12 @@ public class Conditional implements Serializable {
 		this.conditionId = conditionId;
 	}
 
-	public ConditionalOperator getOperator() {
-		return operator;
+	public ConditionalOperator getConditionalOperator() {
+		return conditionalOperator;
 	}
 
-	public void setOperator(ConditionalOperator operator) {
-		this.operator = operator;
-	}
-
-	public String getProperty() {
-		return this.property;
-	}
-
-	public void setProperty(String property) {
-		this.property = property;
+	public void setConditionalOperator(ConditionalOperator conditionalOperator) {
+		this.conditionalOperator = conditionalOperator;
 	}
 
 	public Rule getRule() {
@@ -124,16 +112,16 @@ public class Conditional implements Serializable {
 	private String expressionForStringValue() throws IllegalArgumentException {
 		StringBuilder drl = new StringBuilder();
 
-		if (operator.isComparable(String.class)) {
-			if (operator.equals(ConditionalOperator.CONTAINS)) {
-				drl.append(property).append(".toUpperCase().contains(\"").append(((String) value).toUpperCase())
+		if (conditionalOperator.isComparable(String.class)) {
+			if (conditionalOperator.equals(ConditionalOperator.CONTAINS)) {
+				drl.append("score").append(".toUpperCase().contains(\"").append(((String) value).toUpperCase())
 						.append("\")");
 			} else {
-				drl.append(property).append(" ").append(operator.getOperation()).append(" ").append("\"").append(value)
+				drl.append("score").append(" ").append(conditionalOperator.getOperation()).append(" ").append("\"").append(value)
 						.append("\"");
 			}
 		} else {
-			throw new IllegalArgumentException("Is not possible to use the operator " + operator.getDescription()
+			throw new IllegalArgumentException("Is not possible to use the operator " + conditionalOperator.getDescription()
 					+ " to a " + value.getClass().getSimpleName() + " object.");
 		}
 
@@ -151,12 +139,12 @@ public class Conditional implements Serializable {
 	private String expressionForNumberValue() throws IllegalArgumentException {
 		StringBuilder drl = new StringBuilder();
 
-		if ((operator.isComparable(Short.class)) || (operator.isComparable(Integer.class))
-				|| (operator.isComparable(Long.class)) || (operator.isComparable(Double.class))
-				|| (operator.isComparable(Float.class)) || (operator.isComparable(String.class)) ) {
-			drl.append(property).append(" ").append(operator.getOperation()).append(" ").append(value);
+		if ((conditionalOperator.isComparable(Short.class)) || (conditionalOperator.isComparable(Integer.class))
+				|| (conditionalOperator.isComparable(Long.class)) || (conditionalOperator.isComparable(Double.class))
+				|| (conditionalOperator.isComparable(Float.class)) || (conditionalOperator.isComparable(String.class)) ) {
+			drl.append("score").append(" ").append(conditionalOperator.getOperation()).append(" ").append(value);
 		} else {
-			throw new IllegalArgumentException("Is not possible to use the operator " + operator.getDescription()
+			throw new IllegalArgumentException("Is not possible to use the operator " + conditionalOperator.getDescription()
 					+ " to a " + value.getClass().getSimpleName() + " object.");
 		}
 
@@ -165,7 +153,7 @@ public class Conditional implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Conditional [conditionId=" + conditionId + ", operator=" + operator + ", property=" + property
+		return "Conditional [conditionId=" + conditionId + ", operator=" + conditionalOperator + ", property=" + "score"
 				+ ", value=" + value + "]";
 	}
 	

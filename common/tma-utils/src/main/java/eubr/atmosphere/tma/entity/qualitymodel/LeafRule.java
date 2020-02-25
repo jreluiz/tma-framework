@@ -21,8 +21,7 @@ public class LeafRule extends Rule implements Serializable {
 	}
 
 	@Override
-	public void buildRule(String dataObject, String parentRuleName) {
-		this.setDataObject(dataObject);
+	public void buildHierarchy(String parentRuleName) {
 		this.setName(this.getName() + "\" extends " + "\"" + parentRuleName);
 	}
 

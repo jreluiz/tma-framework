@@ -32,57 +32,58 @@ import org.hibernate.annotations.LazyCollectionOption;
  * 
  */
 @Entity
-@Table(name="Rule")
+@Table(name = "Rule")
 @Inheritance(strategy = InheritanceType.JOINED)
-@NamedQuery(name="Rule.findAll", query="SELECT r FROM Rule r")
+@NamedQuery(name = "Rule.findAll", query = "SELECT r FROM Rule r")
 public class Rule implements Serializable {
-	
+
 	private static final long serialVersionUID = 6163237338626808371L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(unique=true, nullable=false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(unique = true, nullable = false)
 	private int ruleId;
 
-	//bi-directional many-to-one association to compositeattribute
+	// bi-directional many-to-one association to CompositeRule
 	@ManyToOne
-	@JoinColumn(name="compositeRuleId")
+	@JoinColumn(name = "compositeRuleId")
 	private CompositeRule compositeRule;
-	
-	//bi-directional many-to-one association to CompositeAttribute
+
+	// bi-directional many-to-one association to Attribute
 	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name="compositeattributeId")
-	private CompositeAttribute compositeattribute;
-	
+	@JoinColumn(name = "attributeId")
+	private Attribute attribute;
+
 	@Column
 	private String name;
-	
-	//bi-directional many-to-one association to Conditional
-	@OneToMany(mappedBy="rule", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+
+	// bi-directional many-to-one association to Conditional
+	@OneToMany(mappedBy = "rule", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@Fetch(FetchMode.SUBSELECT)
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private Set<Conditional> conditions;
-	
-	//bi-directional many-to-one association to Conditional
-	@OneToMany(mappedBy="rule", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+
+	// bi-directional many-to-one association to ActionRule
+	@OneToMany(mappedBy = "rule", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@Fetch(FetchMode.SUBSELECT)
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private Set<ActionRule> actions;
-	
+
 	@Column
 	private boolean enabled;
-	
+
 	@Column
 	private Integer priority;
-	
-	public void buildRule(String dataObject, String parentRuleName) {}
-	
+
 	@Transient
 	private String object;
 	
+	public void buildHierarchy(String parentRuleName) {
+	}
+
 	public Rule() {
 	}
-	
+
 	public int getRuleId() {
 		return this.ruleId;
 	}
@@ -90,7 +91,7 @@ public class Rule implements Serializable {
 	public void setRuleId(int ruleId) {
 		this.ruleId = ruleId;
 	}
-	
+
 	public CompositeRule getCompositeRule() {
 		return compositeRule;
 	}
@@ -99,12 +100,12 @@ public class Rule implements Serializable {
 		this.compositeRule = compositeRule;
 	}
 
-	public CompositeAttribute getCompositeattribute() {
-		return compositeattribute;
+	public Attribute getAttribute() {
+		return attribute;
 	}
 
-	public void setCompositeattribute(CompositeAttribute compositeattribute) {
-		this.compositeattribute = compositeattribute;
+	public void setAttribute(Attribute attribute) {
+		this.attribute = attribute;
 	}
 
 	public String getName() {
@@ -148,7 +149,7 @@ public class Rule implements Serializable {
 
 		return drl.toString();
 	}
-	
+
 	/**
 	 * Returns the created rule as a map of its properties to be compiled with
 	 * template.
@@ -157,29 +158,28 @@ public class Rule implements Serializable {
 	 * @throws IllegalStateException Indicate a non valid rule.
 	 */
 	public Map<String, Object> asMap() throws IllegalStateException {
-		if ((getName() == null) || (getDataObject() == null)) {
-			throw new IllegalArgumentException(
-					"The rule has no name or object to be evaluated to be accomplished.");
+		if ((getName() == null) || (getAttribute() == null)) {
+			throw new IllegalArgumentException("The rule has no name or attribute to be evaluated to be accomplished.");
 		}
 
 		Map<String, Object> attributes = new HashMap<String, Object>();
-		attributes.put(Rule.Attribute.RULE_NAME.toString(), name);
-		attributes.put(Rule.Attribute.DATA_OBJECT.toString(), object);
-		attributes.put(Rule.Attribute.CONDITIONAL.toString(), conditionAsDRL());
-		attributes.put(Rule.Attribute.ACTIONS.toString(), getActionsIds());
-		attributes.put(Rule.Attribute.PRIORITY.toString(), priority);
-		attributes.put(Rule.Attribute.ENABLED.toString(), enabled);
+		attributes.put(Rule.AttributeRule.RULE_NAME.toString(), name);
+		attributes.put(Rule.AttributeRule.DATA_ATTRIBUTE.toString(), attribute.getClass().getName());
+		attributes.put(Rule.AttributeRule.CONDITIONAL.toString(), conditionAsDRL());
+		attributes.put(Rule.AttributeRule.ACTIONS.toString(), getActionsIds());
+		attributes.put(Rule.AttributeRule.PRIORITY.toString(), priority);
+		attributes.put(Rule.AttributeRule.ENABLED.toString(), enabled);
 
 		return attributes;
 	}
-	
+
 	private String getActionsIds() {
 		StringBuilder sb = new StringBuilder();
-		
+
 		sb.append("\"");
-		
+
 		Iterator<ActionRule> it = actions.iterator();
-		while(it.hasNext()) {
+		while (it.hasNext()) {
 			ActionRule actionRule = it.next();
 			sb.append(actionRule.getActionRuleId());
 			if (it.hasNext()) {
@@ -187,7 +187,7 @@ public class Rule implements Serializable {
 			}
 		}
 		sb.append("\"");
-		
+
 		return sb.toString();
 	}
 
@@ -200,7 +200,7 @@ public class Rule implements Serializable {
 	 * @return Condition created.
 	 */
 	public Conditional addCondition(String property, ConditionalOperator operator, String value) {
-		Conditional condition = new Conditional(property, operator, value);
+		Conditional condition = new Conditional(operator, value);
 		conditions.add(condition);
 
 		return condition;
@@ -211,15 +211,15 @@ public class Rule implements Serializable {
 	 * These names must be the same used to write the .drl file template, which is
 	 * compiled in runtime.
 	 */
-	public enum Attribute {
+	public enum AttributeRule {
 		/**
 		 * Name of the rule.
 		 */
 		RULE_NAME("name"),
 		/**
-		 * Object with data to be processed.
+		 * Attribute with data to be processed.
 		 */
-		DATA_OBJECT("object"),
+		DATA_ATTRIBUTE("attributeObject"),
 		/**
 		 * Conditional expression.
 		 */
@@ -236,13 +236,13 @@ public class Rule implements Serializable {
 		 * Rule active
 		 */
 		ENABLED("active");
-		
+
 		/**
 		 * Name used in template to assign each attribute.
 		 */
 		private final String name;
 
-		private Attribute(String name) {
+		private AttributeRule(String name) {
 			this.name = name;
 		}
 
@@ -275,7 +275,7 @@ public class Rule implements Serializable {
 	public void setDataObject(String object) {
 		this.object = object;
 	}
-
+	
 	public Set<Conditional> getConditions() {
 		return conditions;
 	}
@@ -283,5 +283,5 @@ public class Rule implements Serializable {
 	public Set<ActionRule> getActions() {
 		return actions;
 	}
-	
+
 }

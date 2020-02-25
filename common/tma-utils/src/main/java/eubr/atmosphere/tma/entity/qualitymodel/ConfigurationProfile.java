@@ -32,7 +32,7 @@ public class ConfigurationProfile implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int configurationprofileId;
 
-	//TODO boolean active = false;
+	boolean active = false;
 
 	//bi-directional many-to-one association to Metric
 	@OneToMany(mappedBy="configurationprofile", fetch = FetchType.EAGER)
@@ -55,6 +55,14 @@ public class ConfigurationProfile implements Serializable {
 
 	public void setConfigurationprofileId(int configurationprofileId) {
 		this.configurationprofileId = configurationprofileId;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 	public Set<Metric> getMetrics() {
@@ -121,4 +129,29 @@ public class ConfigurationProfile implements Serializable {
 		return "ConfigurationProfile [metrics=" + metrics + ", preferences=" + preferences + "]";
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (active ? 1231 : 1237);
+		result = prime * result + configurationprofileId;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ConfigurationProfile other = (ConfigurationProfile) obj;
+		if (active != other.active)
+			return false;
+		if (configurationprofileId != other.configurationprofileId)
+			return false;
+		return true;
+	}
+	
 }

@@ -10,7 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
 
 
 /**
@@ -25,7 +24,7 @@ public class Preference implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private int attributeId;
+	private int preferenceId;
 
 	private double threshold;
 
@@ -36,26 +35,31 @@ public class Preference implements Serializable {
 	@JoinColumn(name="configurationprofileId")
 	private ConfigurationProfile configurationprofile;
 
-	//bi-directional one-to-one association to Attribute
-	@OneToOne (cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name="attributeId")
+//	//bi-directional one-to-one association to Attribute
+//	@OneToOne (cascade = CascadeType.ALL, orphanRemoval = true)
+//	@JoinColumn(name="attributeId")
+//	private Attribute attribute;
+	
+	// bi-directional many-to-one association to Attribute
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "attributeId")
 	private Attribute attribute;
 
 	public Preference() {
 	}
 
-	public Preference(int attributeId, double threshold, double weight) {
-		this.attributeId = attributeId;
+	public Preference(int preferenceId, double threshold, double weight) {
+		this.preferenceId = preferenceId;
 		this.threshold = threshold;
 		this.weight = weight;
 	}
 
-	public int getAttributeId() {
-		return attributeId;
+	public int getPreferenceId() {
+		return preferenceId;
 	}
 
-	public void setAttributeId(int attributeId) {
-		this.attributeId = attributeId;
+	public void setPreferenceId(int preferenceId) {
+		this.preferenceId = preferenceId;
 	}
 
 	public double getThreshold() {
@@ -99,7 +103,8 @@ public class Preference implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((attribute == null) ? 0 : attribute.getAttributeId());
+		result = prime * result + ((configurationprofile == null) ? 0 : configurationprofile.hashCode());
+		result = prime * result + preferenceId;
 		long temp;
 		temp = Double.doubleToLongBits(threshold);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
@@ -117,10 +122,12 @@ public class Preference implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Preference other = (Preference) obj;
-		if (attribute == null) {
-			if (other.attribute != null)
+		if (configurationprofile == null) {
+			if (other.configurationprofile != null)
 				return false;
-		} else if (!attribute.equals(other.attribute))
+		} else if (!configurationprofile.equals(other.configurationprofile))
+			return false;
+		if (preferenceId != other.preferenceId)
 			return false;
 		if (Double.doubleToLongBits(threshold) != Double.doubleToLongBits(other.threshold))
 			return false;

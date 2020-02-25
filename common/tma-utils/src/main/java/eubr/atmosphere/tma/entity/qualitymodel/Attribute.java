@@ -1,8 +1,11 @@
 package eubr.atmosphere.tma.entity.qualitymodel;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -16,10 +19,19 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import eubr.atmosphere.tma.entity.plan.Plan;
 import eubr.atmosphere.tma.exceptions.UndefinedException;
+import eubr.atmosphere.tma.utils.ListUtils;
+import eubr.atmosphere.tma.utils.TreeUtils;
 
 /**
  * The persistent class for the attribute database table.
@@ -32,6 +44,9 @@ public abstract class Attribute implements Serializable {
 
 	private static final long serialVersionUID = 4884416721621562261L;
 
+	@Transient
+	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int attributeId;
@@ -41,25 +56,85 @@ public abstract class Attribute implements Serializable {
 	//bi-directional one-to-many association to Historicaldata
 	@OneToMany (mappedBy="attribute", fetch = FetchType.EAGER)
 	private List<HistoricalData> historicaldata;
-
-	//bi-directional one-to-one association to Preference
-	@OneToOne(mappedBy="attribute", cascade = CascadeType.ALL, orphanRemoval = true)
-	private Preference preference;
+	
+	//bi-directional many-to-one association to Rule
+	@OneToMany(mappedBy="attribute", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+	@Fetch(FetchMode.SUBSELECT)
+	@LazyCollection(LazyCollectionOption.FALSE)
+	private List<Preference> preferences;
 
 	//bi-directional many-to-one association to compositeattribute
 	@ManyToOne
 	@JoinColumn(name="compositeattributeId")
 	private CompositeAttribute compositeattribute;
 	
-	//bi-directional one-to-many association to Historicaldata
+	//bi-directional one-to-many association to Plan
 	@OneToMany (mappedBy="attribute", fetch = FetchType.LAZY)
 	private List<Plan> plans;
 
+	//bi-directional many-to-one association to Rule
+	@OneToMany(mappedBy="attribute", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+	@Fetch(FetchMode.SUBSELECT)
+	@LazyCollection(LazyCollectionOption.FALSE)
+	private Set<Rule> rules;
+	
 	public abstract HistoricalData calculate(ConfigurationProfile user, Date timestamp) throws UndefinedException;
 
+	public abstract void buildAttributeRules();
+	
+	public void buildHierarchyRules() {
+		
+		TreeUtils treeUtils = TreeUtils.getInstance();
+
+		List<CompositeRule> rootRules = treeUtils.getRootRules(getRules());
+		for (CompositeRule rootRule : rootRules) {
+			rootRule.buildHierarchy(null);
+		}
+
+	}
+	
+	public double getScore() {
+		
+		// sort historical data list by instant
+		Comparator<HistoricalData> compareByInstant = (HistoricalData h1, HistoricalData h2) -> h1.getId()
+				.getInstant().compareTo(h2.getId().getInstant());
+		Collections.sort(historicaldata, compareByInstant);
+		
+		// get last historical data element
+		HistoricalData lastHistoricalData = ListUtils.getLastElement(historicaldata);
+
+		return lastHistoricalData.getValue();
+	}
+	
+	public Double getPreviousScore() {
+		
+		// sort historical data list by instant
+		Comparator<HistoricalData> compareByInstant = (HistoricalData h1, HistoricalData h2) -> h1.getId()
+				.getInstant().compareTo(h2.getId().getInstant());
+		Collections.sort(historicaldata, compareByInstant);
+		
+		// get second last historical data element
+		HistoricalData secondLastHistoricalData = null;
+		try { 
+			secondLastHistoricalData = historicaldata.get(ListUtils.size(historicaldata) - 2);
+		} catch (IndexOutOfBoundsException e) {
+			LOGGER.info("Historical data has not second last element.");
+		}
+
+		if (secondLastHistoricalData != null) {
+			return secondLastHistoricalData.getValue();
+		}
+		
+		return null;
+	}
+	
+	public Double getThreshold() {
+		return getActivePreference().getThreshold();
+	}
+	
 	public Attribute() {
 	}
-
+	
 	public int getAttributeId() {
 		return this.attributeId;
 	}
@@ -92,12 +167,31 @@ public abstract class Attribute implements Serializable {
 		this.historicaldata = historicaldata;
 	}
 
-	public Preference getPreference() {
-		return this.preference;
+	public List<Preference> getPreferences() {
+		return preferences;
 	}
 
-	public void setPreference(Preference preference) {
-		this.preference = preference;
+	public void setPreferences(List<Preference> preferences) {
+		this.preferences = preferences;
+	}
+
+	public Preference getActivePreference() {
+		if (ListUtils.isNotEmpty(preferences)) {
+			for (Preference pref : preferences) {
+				if (pref.getConfigurationprofile().isActive()) {
+					return pref;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public Set<Rule> getRules() {
+		return rules;
+	}
+
+	public void setRules(Set<Rule> rules) {
+		this.rules = rules;
 	}
 
 	@Override
@@ -106,7 +200,7 @@ public abstract class Attribute implements Serializable {
 		int result = 1;
 		result = prime * result + attributeId;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((preference == null) ? 0 : preference.hashCode());
+		result = prime * result + ((getActivePreference() == null) ? 0 : getActivePreference().hashCode());
 		return result;
 	}
 
@@ -131,10 +225,10 @@ public abstract class Attribute implements Serializable {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (preference == null) {
-			if (other.preference != null)
+		if (getActivePreference() == null) {
+			if (other.getActivePreference() != null)
 				return false;
-		} else if (!preference.equals(other.preference))
+		} else if (!getActivePreference().equals(other.getActivePreference()))
 			return false;
 		return true;
 	}
@@ -142,7 +236,7 @@ public abstract class Attribute implements Serializable {
 	@Override
 	public String toString() {
 		return "Attribute [attributeId=" + attributeId + ", name=" + name + ", historicaldata=" + historicaldata
-				+ ", preference=" + preference + ", compositeattribute=" + compositeattribute + "]";
+				+ ", preference=" + getActivePreference() + ", compositeattribute=" + compositeattribute + "]";
 	}
 
 }

@@ -36,9 +36,8 @@ public class CompositeRule extends Rule implements Serializable {
 	}
 
 	@Override
-	public void buildRule(String dataObject, String parentRuleName) {
-
-		this.setDataObject(dataObject);
+	public void buildHierarchy(String parentRuleName) {
+		
 		if (parentRuleName != null) {
 			this.setName(this.getName() + "\" extends " + "\"" + parentRuleName);
 		}
@@ -46,7 +45,7 @@ public class CompositeRule extends Rule implements Serializable {
 		if (ListUtils.isNotEmpty(children)) {
 			for (Rule rule : children) {
 				if ( !rule.equals(this) ) {
-					rule.buildRule(dataObject, this.getName());
+					rule.buildHierarchy(this.getName());
 				}
 			}
 		}

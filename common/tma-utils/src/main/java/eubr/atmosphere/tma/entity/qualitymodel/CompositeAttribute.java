@@ -3,20 +3,17 @@ package eubr.atmosphere.tma.entity.qualitymodel;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -28,7 +25,6 @@ import eubr.atmosphere.tma.exceptions.UndefinedException;
 import eubr.atmosphere.tma.exceptions.UndefinedMetricException;
 import eubr.atmosphere.tma.exceptions.UndefinedPreferenceException;
 import eubr.atmosphere.tma.utils.ListUtils;
-import eubr.atmosphere.tma.utils.TreeUtils;
 
 /**
  * The persistent class for the CompositeAttribute database table.
@@ -49,55 +45,23 @@ public class CompositeAttribute extends Attribute implements Serializable {
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private List<Attribute> children;
 	
-	//bi-directional many-to-one association to Rule
-	@OneToMany(mappedBy="compositeattribute", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-	@Fetch(FetchMode.SUBSELECT)
-	@LazyCollection(LazyCollectionOption.FALSE)
-	private Set<Rule> rules;
-	
-	@Transient
-	private Map<CompositeAttribute, List<Rule>> compositeRules;
-	
 	public CompositeAttribute() {
 	}
 
-	public void initRules() {
-		compositeRules = new HashMap<>();
-	}
-	
-	public Map<CompositeAttribute, List<Rule>> buildRules(String dataObject) {
-		
-		List<CompositeRule> rootRules = null;
-		TreeUtils treeUtils = TreeUtils.getInstance();
+	@Override
+	public void buildAttributeRules() {
 
-		if ( treeUtils.isRootAttribute(this) ) {
-			
-			rootRules = treeUtils.getRootRules(rules);
-			for (CompositeRule rr : rootRules) {
-				rr.buildRule(dataObject, null);	
-			}
-			
-			compositeRules.put(this, new ArrayList<>(rules));
-			
-			// building children rules
-			for (Attribute c : children) {
-				if (c instanceof CompositeAttribute && !c.equals(this)) {					
-					((CompositeAttribute) c).buildRules(dataObject);
+		this.buildHierarchyRules();
+		
+		//build children rules
+		if ( ListUtils.isNotEmpty(children) ) {
+			for (Attribute child : children) {
+				if ( !child.equals(this) ) {
+					child.buildAttributeRules();
 				}
 			}
-			
-		} else {
-			
-			rootRules = treeUtils.getRootRules(rules);
-			for (CompositeRule rr : rootRules) {
-				rr.buildRule(dataObject, null);	
-			}
-			
-			compositeRules.put(this, new ArrayList<>(rules));
-			
 		}
 		
-		return compositeRules;
 	}
 	
 	public HistoricalData calculate(ConfigurationProfile profile, Date timestamp) throws UndefinedException {
@@ -204,17 +168,9 @@ public class CompositeAttribute extends Attribute implements Serializable {
 		}
 		return children;
 	}
-
+	
 	public void setChildren(List<Attribute> children) {
 		this.children = children;
-	}
-
-	public Set<Rule> getRules() {
-		return rules;
-	}
-
-	public void setRules(Set<Rule> rules) {
-		this.rules = rules;
 	}
 
 	public Attribute addAttribute(Attribute attribute) {
@@ -248,14 +204,6 @@ public class CompositeAttribute extends Attribute implements Serializable {
 	@Override
 	public String toString() {
 		return "CompositeAttribute [operator=" + operator + "]";
-	}
-
-	public boolean isRootAttribute() {
-		Attribute attr = getPreference().getAttribute();
-		if (attr.getAttributeId() == attr.getCompositeattribute().getAttributeId()) { // attribute is his own composite
-			return true;
-		}
-		return false;
 	}
 	
 }

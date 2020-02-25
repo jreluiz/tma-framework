@@ -51,7 +51,7 @@ public class Metric {
 	@OneToOne
 	@JoinColumn(name="attributeId")
 	@LazyCollection(LazyCollectionOption.FALSE)
-	private Leafattribute attribute;
+	private LeafAttribute attribute;
 	
 	//bi-directional many-to-one association to Data
 //	@OneToMany(mappedBy="metric", fetch = FetchType.EAGER)
@@ -126,11 +126,11 @@ public class Metric {
 		this.configurationprofile = configurationprofile;
 	}
 
-	public Leafattribute getAttribute() {
+	public LeafAttribute getAttribute() {
 		return attribute;
 	}
 
-	public void setAttribute(Leafattribute attribute) {
+	public void setAttribute(LeafAttribute attribute) {
 		this.attribute = attribute;
 	}
 

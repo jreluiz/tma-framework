@@ -23,7 +23,7 @@ import eubr.atmosphere.tma.utils.ListUtils;
  */
 @Entity(name = "LeafAttribute")
 @NamedQuery(name = "leafattribute.findAll", query = "SELECT l FROM LeafAttribute l")
-public class Leafattribute extends Attribute implements Serializable {
+public class LeafAttribute extends Attribute implements Serializable {
 
 	private static final long serialVersionUID = 5498567272022007160L;
 
@@ -43,11 +43,16 @@ public class Leafattribute extends Attribute implements Serializable {
 	@OneToOne(mappedBy = "attribute")
 	private Metric metric;
 
-	public Leafattribute() {
+	public LeafAttribute() {
 		super();
 	}
 
-	public Leafattribute(int attributeId, MetricNormalizationKind normalizationKind, double normalizationMax,
+	@Override
+	public void buildAttributeRules() {
+		this.buildHierarchyRules();	
+	}
+	
+	public LeafAttribute(int attributeId, MetricNormalizationKind normalizationKind, double normalizationMax,
 			double normalizationMin, int numSamples, MetricAggregationOperator operator) {
 		super();
 		setAttributeId(attributeId);
@@ -272,7 +277,7 @@ public class Leafattribute extends Attribute implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Leafattribute other = (Leafattribute) obj;
+		LeafAttribute other = (LeafAttribute) obj;
 		if (metric == null) {
 			if (other.metric != null)
 				return false;
