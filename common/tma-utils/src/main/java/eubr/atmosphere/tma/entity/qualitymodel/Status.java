@@ -1,7 +1,8 @@
-package eubr.atmosphere.tma.data;
+package eubr.atmosphere.tma.entity.qualitymodel;
 
-public enum PlanStatus {
+public enum Status {
 
+	BUILDING,
     TO_DO,
     IN_PROGRESS,
     COMPLETED;
@@ -11,7 +12,7 @@ public enum PlanStatus {
         return Integer.toString(ordinal());
     }
 
-    public static PlanStatus valueOf(int ordinal) {
+    public static Status valueOf(int ordinal) {
         return (ordinal < values().length) ? values()[ordinal]
                 : COMPLETED;
     }

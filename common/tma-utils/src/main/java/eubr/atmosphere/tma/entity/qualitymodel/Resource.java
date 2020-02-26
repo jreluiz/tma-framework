@@ -1,12 +1,15 @@
 package eubr.atmosphere.tma.entity.qualitymodel;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 
 
 /**
@@ -29,6 +32,10 @@ public class Resource implements Serializable {
 
 	private String resourceType;
 
+	//bi-directional many-to-one association to ActionRule
+	@OneToMany(mappedBy="resource", fetch=FetchType.EAGER)
+	private Set<ActionRule> actionRules;
+	
 	public Resource() {
 	}
 
@@ -62,6 +69,14 @@ public class Resource implements Serializable {
 
 	public void setResourceType(String resourceType) {
 		this.resourceType = resourceType;
+	}
+
+	public Set<ActionRule> getActionRules() {
+		return actionRules;
+	}
+
+	public void setActionRules(Set<ActionRule> actionRules) {
+		this.actionRules = actionRules;
 	}
 
 }

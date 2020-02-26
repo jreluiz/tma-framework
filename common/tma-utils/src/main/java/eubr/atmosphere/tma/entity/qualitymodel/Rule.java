@@ -20,7 +20,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -75,8 +74,8 @@ public class Rule implements Serializable {
 	@Column
 	private Integer priority;
 
-	@Transient
-	private String object;
+	@Column
+	private String activationGroup;
 	
 	public void buildHierarchy(String parentRuleName) {
 	}
@@ -166,24 +165,35 @@ public class Rule implements Serializable {
 		attributes.put(Rule.AttributeRule.RULE_NAME.toString(), name);
 		attributes.put(Rule.AttributeRule.DATA_ATTRIBUTE.toString(), attribute.getClass().getName());
 		attributes.put(Rule.AttributeRule.CONDITIONAL.toString(), conditionAsDRL());
-		attributes.put(Rule.AttributeRule.ACTIONS.toString(), getActionsIds());
+		attributes.put(Rule.AttributeRule.ACTIONS.toString(), getPlanActionsIds());
 		attributes.put(Rule.AttributeRule.PRIORITY.toString(), priority);
 		attributes.put(Rule.AttributeRule.ENABLED.toString(), enabled);
+		attributes.put(Rule.AttributeRule.ACTIVATION_GROUP.toString(), "\""+activationGroup+"\"");
 
 		return attributes;
 	}
 
-	private String getActionsIds() {
+	/**
+	 * Cria string contendo o numero do plano criado mais as acoes a serem adicionadas no plano.
+	 * 
+	 * Formato: 1:3,5,6
+	 * Plano com id=1 com as acoes 3, 5 e 6
+	 * 
+	 * @return string no formato [plano]:[acoes separadas por virgua]
+	 */
+	private String getPlanActionsIds() {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("\"");
+		sb.append(attribute.getPlan().getPlanId());
+		sb.append(":");
 
 		Iterator<ActionRule> it = actions.iterator();
 		while (it.hasNext()) {
 			ActionRule actionRule = it.next();
 			sb.append(actionRule.getActionRuleId());
 			if (it.hasNext()) {
-				sb.append(";");
+				sb.append(",");
 			}
 		}
 		sb.append("\"");
@@ -235,7 +245,11 @@ public class Rule implements Serializable {
 		/**
 		 * Rule active
 		 */
-		ENABLED("active");
+		ENABLED("active"),
+		/**
+		 * Activation group
+		 */
+		ACTIVATION_GROUP("activationGroup");
 
 		/**
 		 * Name used in template to assign each attribute.
@@ -267,15 +281,15 @@ public class Rule implements Serializable {
 	public void setPriority(Integer priority) {
 		this.priority = priority;
 	}
-
-	public String getDataObject() {
-		return object;
-	}
-
-	public void setDataObject(String object) {
-		this.object = object;
-	}
 	
+	public String getActivationGroup() {
+		return activationGroup;
+	}
+
+	public void setActivationGroup(String activationGroup) {
+		this.activationGroup = activationGroup;
+	}
+
 	public Set<Conditional> getConditions() {
 		return conditions;
 	}

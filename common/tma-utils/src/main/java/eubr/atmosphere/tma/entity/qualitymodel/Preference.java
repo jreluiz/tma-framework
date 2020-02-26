@@ -26,19 +26,14 @@ public class Preference implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int preferenceId;
 
-	private double threshold;
+	private Double threshold;
 
-	private double weight;
+	private Double weight;
 
 	//bi-directional many-to-one association to Configurationprofile
 	@ManyToOne
 	@JoinColumn(name="configurationprofileId")
 	private ConfigurationProfile configurationprofile;
-
-//	//bi-directional one-to-one association to Attribute
-//	@OneToOne (cascade = CascadeType.ALL, orphanRemoval = true)
-//	@JoinColumn(name="attributeId")
-//	private Attribute attribute;
 	
 	// bi-directional many-to-one association to Attribute
 	@ManyToOne(cascade = CascadeType.ALL)
@@ -48,7 +43,7 @@ public class Preference implements Serializable {
 	public Preference() {
 	}
 
-	public Preference(int preferenceId, double threshold, double weight) {
+	public Preference(int preferenceId, Double threshold, Double weight) {
 		this.preferenceId = preferenceId;
 		this.threshold = threshold;
 		this.weight = weight;
@@ -62,19 +57,19 @@ public class Preference implements Serializable {
 		this.preferenceId = preferenceId;
 	}
 
-	public double getThreshold() {
-		return this.threshold;
+	public Double getThreshold() {
+		return threshold;
 	}
 
-	public void setThreshold(double threshold) {
+	public void setThreshold(Double threshold) {
 		this.threshold = threshold;
 	}
 
-	public double getWeight() {
-		return this.weight;
+	public Double getWeight() {
+		return weight;
 	}
 
-	public void setWeight(double weight) {
+	public void setWeight(Double weight) {
 		this.weight = weight;
 	}
 

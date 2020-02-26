@@ -2,7 +2,7 @@ package eubr.atmosphere.tma.utils;
 
 import java.util.List;
 
-import eubr.atmosphere.tma.data.Configuration;
+import eubr.atmosphere.tma.entity.qualitymodel.Configuration;
 
 /**
  * Message format to be sent to execute component 

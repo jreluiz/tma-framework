@@ -28,7 +28,6 @@ import org.hibernate.annotations.LazyCollectionOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eubr.atmosphere.tma.entity.plan.Plan;
 import eubr.atmosphere.tma.exceptions.UndefinedException;
 import eubr.atmosphere.tma.utils.ListUtils;
 import eubr.atmosphere.tma.utils.TreeUtils;
@@ -67,16 +66,15 @@ public abstract class Attribute implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="compositeattributeId")
 	private CompositeAttribute compositeattribute;
-	
-	//bi-directional one-to-many association to Plan
-	@OneToMany (mappedBy="attribute", fetch = FetchType.LAZY)
-	private List<Plan> plans;
 
 	//bi-directional many-to-one association to Rule
 	@OneToMany(mappedBy="attribute", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
 	@Fetch(FetchMode.SUBSELECT)
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private Set<Rule> rules;
+	
+	@Transient
+	private Plan plan;
 	
 	public abstract HistoricalData calculate(ConfigurationProfile user, Date timestamp) throws UndefinedException;
 
@@ -103,6 +101,8 @@ public abstract class Attribute implements Serializable {
 		// get last historical data element
 		HistoricalData lastHistoricalData = ListUtils.getLastElement(historicaldata);
 
+		System.out.println("Score: " + lastHistoricalData.getValue());
+		
 		return lastHistoricalData.getValue();
 	}
 	
@@ -122,13 +122,19 @@ public abstract class Attribute implements Serializable {
 		}
 
 		if (secondLastHistoricalData != null) {
+			
+			System.out.println("Previous score: " + secondLastHistoricalData.getValue());
+			
 			return secondLastHistoricalData.getValue();
 		}
+		
+		System.out.println("Previous score: null");
 		
 		return null;
 	}
 	
 	public Double getThreshold() {
+		System.out.println("Threshold: " + getActivePreference().getThreshold());
 		return getActivePreference().getThreshold();
 	}
 	
@@ -183,6 +189,7 @@ public abstract class Attribute implements Serializable {
 				}
 			}
 		}
+		
 		return null;
 	}
 	
@@ -192,6 +199,14 @@ public abstract class Attribute implements Serializable {
 
 	public void setRules(Set<Rule> rules) {
 		this.rules = rules;
+	}
+
+	public Plan getPlan() {
+		return plan;
+	}
+
+	public void setPlan(Plan plan) {
+		this.plan = plan;
 	}
 
 	@Override

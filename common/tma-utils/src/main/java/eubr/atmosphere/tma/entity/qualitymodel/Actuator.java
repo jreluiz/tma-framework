@@ -1,12 +1,15 @@
 package eubr.atmosphere.tma.entity.qualitymodel;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 
 
 /**
@@ -27,6 +30,10 @@ public class Actuator implements Serializable {
 
 	private String pubKey;
 
+	//bi-directional many-to-one association to ActionRule
+	@OneToMany(mappedBy="actuator", fetch=FetchType.EAGER)
+	private Set<ActionRule> actionRules;
+	
 	public Actuator() {
 	}
 
@@ -52,6 +59,14 @@ public class Actuator implements Serializable {
 
 	public void setPubKey(String pubKey) {
 		this.pubKey = pubKey;
+	}
+
+	public Set<ActionRule> getActionRules() {
+		return actionRules;
+	}
+
+	public void setActionRules(Set<ActionRule> actionRules) {
+		this.actionRules = actionRules;
 	}
 
 }

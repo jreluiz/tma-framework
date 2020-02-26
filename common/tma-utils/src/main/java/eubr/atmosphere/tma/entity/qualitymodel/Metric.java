@@ -146,20 +146,8 @@ public class Metric {
 //	}
 	
 	public List<Data> updateData(Date timestamp) {
-		
-//		Integer probeId = Integer.parseInt(PropertiesManager.getInstance().getProperty("probe.id"));
-//		Integer resourceId = Integer.parseInt(PropertiesManager.getInstance().getProperty("resource.id"));
-		
-//		Integer descriptionId = null;
-//		if (this.descriptionName.equalsIgnoreCase("InformationLossMetric")) {
-//			descriptionId = Integer.parseInt(PropertiesManager.getInstance().getProperty("score")); // loss
-//		} else {
-//			descriptionId = Integer.parseInt(PropertiesManager.getInstance().getProperty("riskP")); // risk
-//		}
-		
 		QualityModelManager qmm = new QualityModelManager();
 		return qmm.getLimitedDataListByIdAndTimestamp(probeId, descriptionId, resourceId, timestamp);
-		
 	}
 
 	@Override

@@ -1,15 +1,18 @@
 package eubr.atmosphere.tma.entity.qualitymodel;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -31,26 +34,29 @@ public class ActionRule implements Serializable {
 	@Column
 	private String actionName;
 
-	@Column(nullable=false)
-	private int actuatorId;
+	//bi-directional many-to-one association to Actuator
+	@ManyToOne
+	@JoinColumn(name="actuatorId")
+	private Actuator actuator;
 
-	@Column
-	private String domain;
-
-	@Column
-	private String keyName;
-
-	@Column(nullable=false)
-	private int resourceId;
+	//bi-directional many-to-one association to Resource
+	@ManyToOne
+	@JoinColumn(name="resourceId")
+	private Resource resource;
 
 	//bi-directional many-to-one association to Rule
 	@ManyToOne
 	@JoinColumn(name="ruleId")
 	private Rule rule;
+	
+	//bi-directional many-to-one association to ActionPlan
+	@OneToMany(mappedBy="actionRule", fetch=FetchType.EAGER)
+	private Set<ActionPlan> actionPlans;
 
-	@Column
-	private String value;
-
+	//bi-directional many-to-one association to Configuration
+	@OneToMany(mappedBy="actionRule", fetch=FetchType.EAGER)
+	private Set<Configuration> configurations;
+	
 	public ActionRule() {
 	}
 
@@ -70,36 +76,20 @@ public class ActionRule implements Serializable {
 		this.actionName = actionName;
 	}
 
-	public int getActuatorId() {
-		return this.actuatorId;
+	public Actuator getActuator() {
+		return actuator;
 	}
 
-	public void setActuatorId(int actuatorId) {
-		this.actuatorId = actuatorId;
+	public void setActuator(Actuator actuator) {
+		this.actuator = actuator;
 	}
 
-	public String getDomain() {
-		return this.domain;
+	public Resource getResource() {
+		return resource;
 	}
 
-	public void setDomain(String domain) {
-		this.domain = domain;
-	}
-
-	public String getKeyName() {
-		return this.keyName;
-	}
-
-	public void setKeyName(String keyName) {
-		this.keyName = keyName;
-	}
-
-	public int getResourceId() {
-		return this.resourceId;
-	}
-
-	public void setResourceId(int resourceId) {
-		this.resourceId = resourceId;
+	public void setResource(Resource resource) {
+		this.resource = resource;
 	}
 
 	public Rule getRule() {
@@ -110,18 +100,25 @@ public class ActionRule implements Serializable {
 		this.rule = rule;
 	}
 
-	public String getValue() {
-		return this.value;
+	public Set<ActionPlan> getActionPlans() {
+		return actionPlans;
 	}
 
-	public void setValue(String value) {
-		this.value = value;
+	public void setActionPlans(Set<ActionPlan> actionPlans) {
+		this.actionPlans = actionPlans;
+	}
+
+	public Set<Configuration> getConfigurations() {
+		return configurations;
+	}
+
+	public void setConfigurations(Set<Configuration> configurations) {
+		this.configurations = configurations;
 	}
 
 	@Override
 	public String toString() {
-		return "ActionRule [actionRuleId=" + actionRuleId + ", actionName=" + actionName + ", domain=" + domain
-				+ ", keyName=" + keyName + ", value=" + value + "]";
+		return "ActionRule [actionRuleId=" + actionRuleId + ", actionName=" + actionName + "]";
 	}
 
 }
