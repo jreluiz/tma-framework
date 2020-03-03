@@ -76,6 +76,9 @@ public abstract class Attribute implements Serializable {
 	@Transient
 	private Plan plan;
 	
+	@Transient
+	private RuleAttributeStatus ruleAttributeStatus;
+	
 	public abstract HistoricalData calculate(ConfigurationProfile user, Date timestamp) throws UndefinedException;
 
 	public abstract void buildAttributeRules();
@@ -207,6 +210,14 @@ public abstract class Attribute implements Serializable {
 
 	public void setPlan(Plan plan) {
 		this.plan = plan;
+	}
+
+	public RuleAttributeStatus getRuleAttributeStatus() {
+		return ruleAttributeStatus;
+	}
+
+	public void setRuleAttributeStatus(RuleAttributeStatus ruleAttributeStatus) {
+		this.ruleAttributeStatus = ruleAttributeStatus;
 	}
 
 	@Override
