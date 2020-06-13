@@ -1,6 +1,8 @@
 package eubr.atmosphere.tma.entity.qualitymodel;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -59,6 +61,16 @@ public class ActionRule implements Serializable {
 	
 	public ActionRule() {
 	}
+	
+	public ActionRule(int actionRuleId, String actionName, Actuator actuator, Resource resource) {
+		super();
+		this.actionRuleId = actionRuleId;
+		this.actionName = actionName;
+		this.actuator = actuator;
+		this.resource = resource;
+	}
+
+
 
 	public int getActionRuleId() {
 		return this.actionRuleId;
@@ -114,6 +126,13 @@ public class ActionRule implements Serializable {
 
 	public void setConfigurations(Set<Configuration> configurations) {
 		this.configurations = configurations;
+	}
+	
+	public void addConfiguration(Configuration configuration) {
+		if (this.configurations == null) {
+			this.configurations = new HashSet<>();
+		}
+		this.configurations.add(configuration);
 	}
 
 	@Override

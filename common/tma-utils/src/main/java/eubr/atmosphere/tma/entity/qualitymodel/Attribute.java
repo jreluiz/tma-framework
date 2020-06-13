@@ -3,7 +3,6 @@ package eubr.atmosphere.tma.entity.qualitymodel;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -79,7 +78,7 @@ public abstract class Attribute implements Serializable {
 	@Transient
 	private RuleAttributeStatus ruleAttributeStatus;
 	
-	public abstract HistoricalData calculate(ConfigurationProfile user, Date timestamp) throws UndefinedException;
+	public abstract HistoricalData calculate(ConfigurationProfile user) throws UndefinedException;
 
 	public abstract void buildAttributeRules();
 	

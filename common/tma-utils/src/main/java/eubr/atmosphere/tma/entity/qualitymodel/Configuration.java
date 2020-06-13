@@ -43,6 +43,14 @@ public class Configuration implements Serializable {
 	public Configuration() {
 	}
 
+	public Configuration(ConfigurationPK id, String domain, String keyName, String value) {
+		super();
+		this.id = id;
+		this.domain = domain;
+		this.keyName = keyName;
+		this.value = value;
+	}
+
 	public ConfigurationPK getId() {
 		return this.id;
 	}

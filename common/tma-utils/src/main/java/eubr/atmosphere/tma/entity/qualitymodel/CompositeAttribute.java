@@ -3,9 +3,6 @@ package eubr.atmosphere.tma.entity.qualitymodel;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -64,7 +61,7 @@ public class CompositeAttribute extends Attribute implements Serializable {
 		
 	}
 	
-	public HistoricalData calculate(ConfigurationProfile profile, Date timestamp) throws UndefinedException {
+	public HistoricalData calculate(ConfigurationProfile profile) throws UndefinedException {
 		
 		if (profile == null || ListUtils.isEmpty(profile.getPreferences())) {
 			throw new UndefinedPreferenceException("No defined preference for composite attribute " + this.getName());
@@ -76,13 +73,13 @@ public class CompositeAttribute extends Attribute implements Serializable {
 
 		switch (operator) {
 		case NEUTRALITY:
-			d.setValue(calculateNeutrality(profile, timestamp));
+			d.setValue(calculateNeutrality(profile));
 			break;
 		case REPLACEABILITY:
-			d.setValue(calculateReplaceability(profile, timestamp));
+			d.setValue(calculateReplaceability(profile));
 			break;
 		case SIMULTANEITY:
-			d.setValue(calculateSimultaneity(profile, timestamp));
+			d.setValue(calculateSimultaneity(profile));
 			break;
 		default:
 			throw new UnsupportedOperationException();
@@ -95,14 +92,14 @@ public class CompositeAttribute extends Attribute implements Serializable {
 		return d;
 	}
 
-	protected double calculateNeutrality(ConfigurationProfile profile, Date timestamp) throws UndefinedException {
+	protected double calculateNeutrality(ConfigurationProfile profile) throws UndefinedException {
 		double score = 0.0;
 		if (ListUtils.isNotEmpty(children)) {
 			for (Attribute child : children) {
 				if (!child.equals(this)) {
 					Preference childPref = profile.getPreference(child);
 					try {
-						score += child.calculate(profile, timestamp).getValue() * childPref.getWeight();
+						score += child.calculate(profile).getValue() * childPref.getWeight();
 					} catch (UndefinedMetricException e) {
 						e.printStackTrace();
 					}
@@ -112,14 +109,14 @@ public class CompositeAttribute extends Attribute implements Serializable {
 		return score;
 	}
 
-	protected double calculateSimultaneity(ConfigurationProfile profile, Date timestamp) throws UndefinedException {
+	protected double calculateSimultaneity(ConfigurationProfile profile) throws UndefinedException {
 		double score = 0.0;
 		if (ListUtils.isNotEmpty(this.children)) {
 			for (Attribute child : children) {
 				if (!child.equals(this)) {
 					Preference childPref = profile.getPreference(child);
 					try {
-						double scoreAux = child.calculate(profile, timestamp).getValue() * childPref.getWeight();
+						double scoreAux = child.calculate(profile).getValue() * childPref.getWeight();
 						if (scoreAux < childPref.getThreshold()) {
 							score = 0.0;
 							break;
@@ -134,14 +131,14 @@ public class CompositeAttribute extends Attribute implements Serializable {
 		return score;
 	}
 
-	protected double calculateReplaceability(ConfigurationProfile profile, Date timestamp) throws UndefinedException {
+	protected double calculateReplaceability(ConfigurationProfile profile) throws UndefinedException {
 		double score = 0.0;
 		if (ListUtils.isNotEmpty(this.children)) {
 			for (Attribute child : children) {
 				if (!child.equals(this)) {
 					Preference childPref = profile.getPreference(child);
 					try {
-						double scoreAux = child.calculate(profile, timestamp).getValue() * childPref.getWeight();
+						double scoreAux = child.calculate(profile).getValue() * childPref.getWeight();
 						if (scoreAux > childPref.getThreshold()) {
 							score += scoreAux;
 						}

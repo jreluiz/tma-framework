@@ -37,6 +37,13 @@ public class Actuator implements Serializable {
 	public Actuator() {
 	}
 
+	public Actuator(int actuatorId, String address, String pubKey) {
+		super();
+		this.actuatorId = actuatorId;
+		this.address = address;
+		this.pubKey = pubKey;
+	}
+
 	public int getActuatorId() {
 		return this.actuatorId;
 	}

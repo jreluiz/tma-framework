@@ -2,7 +2,6 @@ package eubr.atmosphere.tma.entity.qualitymodel;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -49,7 +48,7 @@ public class LeafAttribute extends Attribute implements Serializable {
 
 	@Override
 	public void buildAttributeRules() {
-		this.buildHierarchyRules();	
+		this.buildHierarchyRules();
 	}
 	
 	public LeafAttribute(int attributeId, MetricNormalizationKind normalizationKind, double normalizationMax,
@@ -63,7 +62,7 @@ public class LeafAttribute extends Attribute implements Serializable {
 		this.operator = operator;
 	}
 
-	public HistoricalData calculate(ConfigurationProfile profile, Date timestamp) throws UndefinedMetricException {
+	public HistoricalData calculate(ConfigurationProfile profile) throws UndefinedMetricException {
 
 		if (profile == null || ListUtils.isEmpty(profile.getMetrics())) {
 			throw new UndefinedMetricException("No defined metric for leaf attribute " + this.getName());
@@ -76,16 +75,16 @@ public class LeafAttribute extends Attribute implements Serializable {
 
 		switch (operator) {
 		case AVERAGE:
-			d.setValue(calculateAverage(profile, timestamp));
+			d.setValue(calculateAverage(profile));
 			break;
 		case MINIMUM:
-			d.setValue(calculateMinimum(profile, timestamp));
+			d.setValue(calculateMinimum(profile));
 			break;
 		case MAXIMUM:
-			d.setValue(calculateMaximum(profile, timestamp));
+			d.setValue(calculateMaximum(profile));
 			break;
 		case SUM:
-			d.setValue(calculateSum(profile, timestamp));
+			d.setValue(calculateSum(profile));
 			break;
 		default:
 			throw new UnsupportedOperationException();
@@ -98,7 +97,7 @@ public class LeafAttribute extends Attribute implements Serializable {
 		return d;
 	}
 
-	protected double calculateAverage(ConfigurationProfile profile, Date timestamp) {
+	protected double calculateAverage(ConfigurationProfile profile) {
 		double average = 0;
 		double amount = 0;
 		Iterator<Metric> iterMetric = profile.getMetrics().iterator();
@@ -107,7 +106,7 @@ public class LeafAttribute extends Attribute implements Serializable {
 
 			if (metric.getAttribute().equals(this)) {
 				// The user-defined metric concerns the same leaf attribute (metric definition)
-				List<Data> data = metric.updateData(timestamp);
+				List<Data> data = metric.updateData();
 				System.out.println("Data: " + data.size());
 				amount += (double) data.size();
 				Iterator<Data> iterData = data.iterator();
@@ -121,13 +120,17 @@ public class LeafAttribute extends Attribute implements Serializable {
 		System.out.println("average: " + average);
 		System.out.println("amount: " + amount);
 		
+		if (average == 0 && amount == 0) {
+			return 0;
+		}
+		
 		if (this.normalizationKind == MetricNormalizationKind.COST) {
 			return 1 - (average / amount);
 		}
 		return average / amount;
 	}
 
-	protected double calculateMinimum(ConfigurationProfile profile, Date timestamp) {
+	protected double calculateMinimum(ConfigurationProfile profile) {
 		double minimum = 0;
 		Iterator<Metric> iterMetric = profile.getMetrics().iterator();
 		while (iterMetric.hasNext()) {
@@ -135,7 +138,7 @@ public class LeafAttribute extends Attribute implements Serializable {
 
 			if (metric.getAttribute().equals(this)) {
 				// The user-defined metric concerns the same leaf attribute (metric definition)
-				List<Data> data = metric.updateData(timestamp);
+				List<Data> data = metric.updateData();
 				Iterator<Data> iterData = data.iterator();
 				while (iterData.hasNext()) {
 					Data measure = iterData.next();
@@ -151,7 +154,7 @@ public class LeafAttribute extends Attribute implements Serializable {
 		return minimum;
 	}
 
-	protected double calculateMaximum(ConfigurationProfile profile, Date timestamp) {
+	protected double calculateMaximum(ConfigurationProfile profile) {
 		double maximum = 0;
 		Iterator<Metric> iterMetric = profile.getMetrics().iterator();
 		while (iterMetric.hasNext()) {
@@ -159,7 +162,7 @@ public class LeafAttribute extends Attribute implements Serializable {
 
 			if (metric.getAttribute().equals(this)) {
 				// The user-defined metric concerns the same leaf attribute (metric definition)
-				List<Data> data = metric.updateData(timestamp);
+				List<Data> data = metric.updateData();
 				Iterator<Data> iterData = data.iterator();
 				while (iterData.hasNext()) {
 					Data measure = iterData.next();
@@ -175,7 +178,7 @@ public class LeafAttribute extends Attribute implements Serializable {
 		return maximum;
 	}
 
-	protected double calculateSum(ConfigurationProfile profile, Date timestamp) {
+	protected double calculateSum(ConfigurationProfile profile) {
 		double sum = 0;
 		Iterator<Metric> iterMetric = profile.getMetrics().iterator();
 		while (iterMetric.hasNext()) {
@@ -183,7 +186,7 @@ public class LeafAttribute extends Attribute implements Serializable {
 
 			if (metric.getAttribute().equals(this)) {
 				// The user-defined metric concerns the same leaf attribute (metric definition)
-				List<Data> data = metric.updateData(timestamp);
+				List<Data> data = metric.updateData();
 				Iterator<Data> iterData = data.iterator();
 				while (iterData.hasNext()) {
 					Data measure = iterData.next();

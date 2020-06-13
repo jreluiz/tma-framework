@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.LazyCollection;
@@ -41,6 +43,9 @@ public class Metric {
 	private String probeName;
 
 	private String resourceName;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date lastTimestampDataInserted;
 
 	//bi-directional many-to-one association to Configurationprofile
 	@ManyToOne
@@ -145,9 +150,17 @@ public class Metric {
 //		this.data = data;
 //	}
 	
-	public List<Data> updateData(Date timestamp) {
+	public List<Data> updateData() {
 		QualityModelManager qmm = new QualityModelManager();
-		return qmm.getLimitedDataListByIdAndTimestamp(probeId, descriptionId, resourceId, timestamp);
+		return qmm.getLimitedDataListByIdAndTimestamp(probeId, descriptionId, resourceId, lastTimestampDataInserted);
+	}
+
+	public Date getLastTimestampDataInserted() {
+		return lastTimestampDataInserted;
+	}
+
+	public void setLastTimestampDataInserted(Date lastTimestampDataInserted) {
+		this.lastTimestampDataInserted = lastTimestampDataInserted;
 	}
 
 	@Override

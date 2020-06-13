@@ -27,7 +27,7 @@ public class QualityModelManager {
 		try {
 			ps = DatabaseManager.getConnectionInstance().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			ps.setTimestamp(1, new Timestamp(historicalData.getId().getInstant().getTime()));
-			ps.setDouble(2, historicalData.getValue());
+			ps.setDouble(2, Double.isNaN(historicalData.getValue()) ? 0 : historicalData.getValue());
 			ps.setInt(3, historicalData.getAttribute().getAttributeId());
 
 			DatabaseManager databaseManager = new DatabaseManager();
@@ -43,7 +43,17 @@ public class QualityModelManager {
 
 		List<Data> dataList = new ArrayList<>();
 		PreparedStatement ps = null;
-		String sql = "SELECT d.probeId, d.descriptionId, d.resourceId, d.valueTime, d.metricId, d.value FROM Data d WHERE d.probeId = ? and d.descriptionId = ? and d.resourceId = ? and d.valueTime = ?";
+		String sql = "SELECT d.probeid, " + 
+							" d.descriptionid, " + 
+							" d.resourceid, " + 
+							" d.valuetime, " + 
+							" d.metricid, " + 
+							" d.value " + 
+					" FROM   Data d " + 
+					" WHERE  d.probeid = ? " + 
+							" AND d.descriptionid = ? " + 
+							" AND d.resourceid = ? " + 
+							" AND d.valuetime = ? ";
 
 		try {
 
@@ -51,7 +61,7 @@ public class QualityModelManager {
 			ps.setInt(1, probeId);
 			ps.setInt(2, descriptionId);
 			ps.setInt(3, resourceId);
-			ps.setTimestamp(4, new Timestamp(date.getTime()));
+			ps.setTimestamp(4, date != null ? new Timestamp(date.getTime()) : null);
 
 			ResultSet rs = DatabaseManager.executeQuery(ps);
 			if (rs.next()) {

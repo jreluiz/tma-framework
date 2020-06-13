@@ -1,16 +1,16 @@
 package eubr.atmosphere.tma.utils;
 
-public class TrustworthinessScore extends AbstractTrustworthinessScore implements Score {
+public class TrustworthinessScore implements Score {
 
     private Double score;
     private ResourceConsumptionScore resourceConsumptionScore; 
     private PerformanceScore performanceScore;
-    private PrivacyScore privacyScore;
+    private MessagePlanning privacyScore;
     private Integer podCount;
     private long timestamp;
     
     public TrustworthinessScore(ResourceConsumptionScore resourceConsumptionPodScore, 
-            PerformanceScore performanceScore, PrivacyScore privacyScore) {
+            PerformanceScore performanceScore, MessagePlanning privacyScore) {
         this.resourceConsumptionScore = resourceConsumptionPodScore;
         this.performanceScore = performanceScore;
         this.privacyScore = privacyScore;
@@ -70,18 +70,12 @@ public class TrustworthinessScore extends AbstractTrustworthinessScore implement
         return this.performanceScore;
     }
 
-	public PrivacyScore getPrivacyScore() {
+	public MessagePlanning getPrivacyScore() {
 		return privacyScore;
 	}
 
-	public void setPrivacyScore(PrivacyScore privacyScore) {
+	public void setPrivacyScore(MessagePlanning privacyScore) {
 		this.privacyScore = privacyScore;
-	}
-
-	@Override
-	public Integer getPlanId() {
-		// TODO Auto-generated method stub
-		return null;
 	}
     
 }
