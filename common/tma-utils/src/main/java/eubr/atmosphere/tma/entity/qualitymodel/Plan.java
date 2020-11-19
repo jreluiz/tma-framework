@@ -39,6 +39,13 @@ public class Plan implements Serializable {
 	public Plan() {
 	}
 
+	public Plan(int planId, int status, Timestamp valueTime) {
+		super();
+		this.planId = planId;
+		this.status = status;
+		this.valueTime = valueTime;
+	}
+
 	public int getPlanId() {
 		return this.planId;
 	}
